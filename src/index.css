@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --color-artistic-bg: #F9F8F6;
+  --color-artistic-dark: #1A1A1A;
+  --color-artistic-accent: #C5A059;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", sans-serif;
+}

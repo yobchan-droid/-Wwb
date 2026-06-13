@@ -1,0 +1,6 @@
+{
+  "name": "美髮沙龍預約網站",
+  "description": "專為設計師 Endy 與 Migo 打造的時尚美髮沙龍網站，提供韓式潮剪、專業燙髮、染髮服務，並包含極致流暢的線上預約管理系統。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
