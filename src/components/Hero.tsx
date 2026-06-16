@@ -1,5 +1,6 @@
 import { Calendar, Clock, MapPin, Phone, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
+import heroImg from '../assets/images/salon_hero_1781318443099.jpg';
 
 interface HeroProps {
   onScrollTo: (id: string) => void;
@@ -18,7 +19,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
       {/* Background Image with Elegant Artistic Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
-          src="/src/assets/images/salon_hero_1781318443099.jpg"
+          src={heroImg}
           alt="SCREEN Hair Salon luxury interior"
           className="w-full h-full object-cover object-center filter grayscale brightness-110 opacity-15"
           referrerPolicy="no-referrer"

@@ -1,11 +1,15 @@
 import { Designer, Service, Testimonial } from './types';
+import endyAvatar from './assets/images/designer_endy_new_1781434607962.jpg';
+import cutService from './assets/images/service_korean_cut_1781318500488.jpg';
+import permService from './assets/images/service_perm_1781318514087.jpg';
+import colorService from './assets/images/service_color_1781318529528.jpg';
 
 export const DESIGNERS: Designer[] = [
   {
     id: 'endy',
     name: 'Endy',
     title: '1 號 創意視覺總監 / 精緻剪燙染專家 (LINE: end0708)',
-    avatar: '/src/assets/images/designer_endy_new_1781434607962.jpg',
+    avatar: endyAvatar,
     bio: '身為斯古林髮型林口旗艦店的 1 號主理設計師，Endy 擁有多年男士與流行沙龍資歷。他熱衷於將最前沿的流行趨勢（如小紅書爆款、日韓前刺、羊毛捲與潮流挑染）融入客人的日常造型中。憑藉細緻的傾聽與高超的水分鎖定燙染技術，為每位顧客打造高質感且極易整理的專屬髮型。',
     specialties: ['男士燙髮 (羊毛捲/前刺)', '專業染髮 (挑染/霧感系列)', '男士精緻剪髮 + 洗髮', '精緻舒壓洗髮'],
     experience: '斯古林麗林旗艦店主辦設計師 (LINE: end0708)',
@@ -24,7 +28,7 @@ export const SERVICES: Service[] = [
     price: 600,
     duration: 45,
     description: '包含男士精緻剪髮與各式造型剪髮。結合深層頭皮舒壓洗髮，依據個人頭型骨骼比例，雕琢最乾淨俐落的極致線條感。',
-    image: '/src/assets/images/service_korean_cut_1781318500488.jpg',
+    image: cutService,
     tags: ['精緻剪髮', '造型剪髮', '男士專屬']
   },
   {
@@ -34,7 +38,7 @@ export const SERVICES: Service[] = [
     price: 1500,
     duration: 120,
     description: '支援羊毛捲、小紅書熱門、韓日陸系列、前刺、火焰前刺等精緻燙髮項目。量身控制蓬鬆度與支撐力，解決頭髮扁塌、難塑形問題。',
-    image: '/src/assets/images/service_perm_1781318514087.jpg',
+    image: permService,
     tags: ['羊毛捲/前刺', '超好整理', '1500元起']
   },
   {
@@ -44,7 +48,7 @@ export const SERVICES: Service[] = [
     price: 1500,
     duration: 120,
     description: '提供客製設計級挑染、時尚潮流染髮以及純粹霧感等多元色系。使用低氨高保濕名品溫和染劑，保護髮絲健康。',
-    image: '/src/assets/images/service_color_1781318529528.jpg',
+    image: colorService,
     tags: ['霧感色系', '挑染/潮流染', '1500元起']
   },
   {

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { ZoomIn, Camera, Heart, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import cutService from '../assets/images/service_korean_cut_1781318500488.jpg';
+import permService from '../assets/images/service_perm_1781318514087.jpg';
+import colorService from '../assets/images/service_color_1781318529528.jpg';
 
 interface GalleryItem {
   id: string;
@@ -22,7 +25,7 @@ export default function Gallery() {
       title: '韓系流線鮑伯剪裁',
       designer: 'Endy',
       serviceType: 'cut',
-      image: '/src/assets/images/service_korean_cut_1781318500488.jpg',
+      image: cutService,
       likes: 124
     },
     {
@@ -30,7 +33,7 @@ export default function Gallery() {
       title: '柔霧雲朵燙髮',
       designer: 'Endy',
       serviceType: 'perm',
-      image: '/src/assets/images/service_perm_1781318514087.jpg',
+      image: permService,
       likes: 198
     },
     {
@@ -38,7 +41,7 @@ export default function Gallery() {
       title: '迷霧灰銀手刷漸層染',
       designer: 'Endy',
       serviceType: 'color',
-      image: '/src/assets/images/service_color_1781318529528.jpg',
+      image: colorService,
       likes: 247
     },
     {
