@@ -24,15 +24,15 @@ export default function Footer({ onScrollTo }: FooterProps) {
             </div>
             
             <p className="text-white/60 leading-relaxed font-light font-sans text-[11px]">
-              SCREEN HAIR SALON 林口店完美融合日韓美流精髓與高階美學工藝。我們與 1 號設計師 Endy 和 Migo 一同，致力於在一對一的極致奢雅沙龍體驗中，為您量身定制前所未見的完美秀髮表情。
+              SCREEN HAIR SALON 斯古林髮型林口店完美融合日韓潮剪與高美學工藝。由 1 號設計師 Endy 一同為您奉上一對一的極致奢雅理髮體驗，為您量身定制前所未見的完美帥氣容貌。
             </p>
 
             <div className="flex space-x-2.5 pt-2">
-              <a href="#instagram" className="p-2 border border-white/10 text-white/50 hover:text-artistic-accent hover:border-artistic-accent transition rounded-none">
+              <a href="https://www.instagram.com/screen_salon_/" target="_blank" rel="noopener noreferrer" className="p-2 border border-white/10 text-white/50 hover:text-artistic-accent hover:border-artistic-accent transition rounded-none">
                 <Instagram className="w-3.5 h-3.5" />
               </a>
-              <a href="#facebook" className="p-2 border border-white/10 text-white/50 hover:text-artistic-accent hover:border-artistic-accent transition rounded-none">
-                <Facebook className="w-3.5 h-3.5" />
+              <a href="https://line.me/ti/p/~end0708" target="_blank" rel="noopener noreferrer" className="p-2 border border-white/10 text-white/50 hover:text-artistic-accent hover:border-artistic-accent transition rounded-none">
+                <span className="text-[10px] font-sans font-bold leading-none">LINE</span>
               </a>
             </div>
           </div>
@@ -46,22 +46,22 @@ export default function Footer({ onScrollTo }: FooterProps) {
             <ul className="space-y-2.5 text-[11px] text-white/60">
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  韓式微整潮剪 (含深層洗髮與吹整)
+                  男士精緻設計剪洗款 ($600)
                 </button>
               </li>
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  設計熱塑微捲燙 (氣墊燙/木馬燙)
+                  男士設計燙髮系列 (羊毛捲/前刺等 $1500up)
                 </button>
               </li>
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  命定藝境調色染髮 (大師調配款)
+                  大師級染髮 (設計款挑染/霧感彩染 $1500up)
                 </button>
               </li>
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  黑曜光感極致結構式深層護髮
+                  精緻舒壓深層洗髮與吹整 ($350)
                 </button>
               </li>
             </ul>
@@ -70,18 +70,13 @@ export default function Footer({ onScrollTo }: FooterProps) {
           {/* Col 3: Designers Availability */}
           <div className="space-y-4">
             <h4 className="text-white font-serif font-light tracking-[0.15em] text-xs uppercase border-b border-white/5 pb-2">
-              指定藝術大師 / Stylists
+              指定藝術大師 / Stylist
             </h4>
             
             <div className="space-y-3.5 text-[11px]">
               <div className="text-left">
-                <p className="font-semibold text-white">1 號 Endy 創意視覺總監 / 韓剪大師</p>
+                <p className="font-semibold text-white">1 號 Endy 創意視覺總監 / 剪燙染大師</p>
                 <span className="text-[10px] text-artistic-accent tracking-widest font-sans uppercase">逢星期一、四固定公休 (LINE: end0708)</span>
-              </div>
-
-              <div className="text-left">
-                <p className="font-semibold text-white">Migo 極致色彩大師 / 質感燙髮</p>
-                <span className="text-[10px] text-artistic-accent tracking-widest font-sans uppercase">逢星期一、四固定公休</span>
               </div>
             </div>
           </div>

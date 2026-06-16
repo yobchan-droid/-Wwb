@@ -13,10 +13,10 @@ export default function Services({ onSelectService }: ServicesProps) {
 
   const categories = [
     { value: 'all', label: '所有項目 / All' },
-    { value: 'cut', label: '韓式潮剪 / Cut' },
-    { value: 'perm', label: '專業燙髮 / Perm' },
-    { value: 'color', label: '藝術染髮 / Color' },
-    { value: 'treatment', label: '極致護理 / Treatment' },
+    { value: 'cut', label: '精緻剪洗 / Cut' },
+    { value: 'perm', label: '潮流燙髮 / Perm' },
+    { value: 'color', label: '大師染髮 / Color' },
+    { value: 'treatment', label: '舒壓深層洗 / Wash' },
   ];
 
   const filteredServices = activeCategory === 'all'
@@ -89,7 +89,7 @@ export default function Services({ onSelectService }: ServicesProps) {
                   {/* Aspect label */}
                   <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1 border border-artistic-dark/10 rounded-none shadow-xs">
                     <span className="text-[9px] font-sans font-bold text-artistic-dark tracking-widest uppercase">
-                      {service.category === 'cut' ? '韓剪 / CUT' : service.category === 'perm' ? '塑型 / PERM' : service.category === 'color' ? '特調 / COLOR' : '極致護理'}
+                      {service.category === 'cut' ? '剪洗 / CUT' : service.category === 'perm' ? '燙髮 / PERM' : service.category === 'color' ? '染髮 / COLOR' : '洗整 / WASH'}
                     </span>
                   </div>
                 </div>

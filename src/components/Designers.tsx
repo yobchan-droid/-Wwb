@@ -36,12 +36,12 @@ export default function Designers({ onSelectDesigner }: DesignersProps) {
           </h2>
           <div className="h-[1px] w-20 bg-artistic-accent mx-auto" />
           <p className="text-artistic-dark/75 font-sans font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto pb-2">
-            我們擁有些獨自專精、具靈魂深度的美髮藝術大師。無論是追求精準骨骼修飾的高質感韓式潮剪，或是渴望尋找屬於您的特調命定髮色，Endy 與 Migo 都會認真聆聽您的造型渴望。
+            斯古林林口店的頂尖美髮藝術大師。無論是追求兩側貼合、極致蓬鬆且易整理的男士燙髮（羊毛捲/小紅書/前刺系列），或是客製化潮流彩染挑染與男士精緻理髮，Endy 都會以極致美學深切傾聽您的造型渴望。
           </p>
         </div>
 
         {/* Designers Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 max-w-3xl mx-auto">
           {DESIGNERS.map((designer: Designer, idx: number) => (
             <motion.div
               initial={{ opacity: 0, y: 30 }}

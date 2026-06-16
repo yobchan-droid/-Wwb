@@ -65,10 +65,9 @@ export default function BookingForm({
     const isWorking = activeDesigner.workDays.includes(dayOfWeek);
     if (!isWorking) {
       const daysOffNames = {
-        endy: '星期三',
-        migo: '星期一',
+        endy: '星期一、四',
       };
-      const dayOffName = daysOffNames[selectedDesignerId as 'endy' | 'migo'] || '特定平日';
+      const dayOffName = daysOffNames[selectedDesignerId as 'endy'] || '固定公休日';
       return {
         isWorking: false,
         errorText: `⚠️ ${activeDesigner.name} 設計師於 ${dayOffName} 固定公休休假中，請更換其他日期。`
@@ -228,7 +227,7 @@ export default function BookingForm({
                       <option value="" disabled>-- 請選取主辦設計師 --</option>
                       {DESIGNERS.map((d) => (
                         <option key={d.id} value={d.id}>
-                          {d.name} ({d.title.split(' / ')[0]}) (★{d.rating}) — {d.id === 'endy' ? '週三休' : '週一休'}
+                          {d.name} ({d.title.split(' / ')[0]}) (★{d.rating}) — 週一、四公休
                         </option>
                       ))}
                     </select>
@@ -511,12 +510,7 @@ export default function BookingForm({
               <div className="space-y-3 text-xs">
                 {/* Endy status */}
                 <div className="flex items-center justify-between p-2.5 rounded-none bg-artistic-bg/60 border border-artistic-dark/5">
-                  <span className="font-semibold text-artistic-dark">Endy 創意總監</span>
-                  <span className="text-emerald-700 font-medium">⚫ 週一、四公休，每日開放 9 時段</span>
-                </div>
-                {/* Migo status */}
-                <div className="flex items-center justify-between p-2.5 rounded-none bg-artistic-bg/60 border border-artistic-dark/5">
-                  <span className="font-semibold text-artistic-dark">Migo 染燙專家</span>
+                  <span className="font-semibold text-artistic-dark">1 號 Endy 創意總監 / 大師</span>
                   <span className="text-emerald-700 font-medium">⚫ 週一、四公休，每日開放 9 時段</span>
                 </div>
               </div>
@@ -563,7 +557,7 @@ export default function BookingForm({
               >
                 <div className="text-artistic-accent text-3xl mb-3">🪮</div>
                 <p className="text-sm text-artistic-dark font-serif font-semibold">目前尚無預約登記紀錄。</p>
-                <p className="text-xs text-artistic-dark/60 mt-1">歡迎填寫上方預約單，指定 Endy 或 Migo 為您服務！</p>
+                <p className="text-xs text-artistic-dark/60 mt-1">歡迎填寫上方預約單，指定 1 號設計師 Endy 為您服務！</p>
               </motion.div>
             ) : (
               <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

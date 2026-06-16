@@ -54,10 +54,10 @@ export default function Header({ onScrollTo }: HeaderProps) {
             </div>
             <div className="text-left">
               <span className="font-serif text-xl sm:text-2xl font-bold tracking-tighter text-artistic-dark block">
-                SCREEN <span className="text-artistic-accent font-medium">HAIR</span>
+                SCREEN <span className="text-artistic-accent font-medium">斯古林</span>
               </span>
               <span className="text-[9px] tracking-[0.25em] font-sans text-artistic-dark/60 block -mt-1 uppercase">
-                Artisanal Studio / Linkou
+                Linkou Flagship / 林口旗艦店
               </span>
             </div>
           </div>

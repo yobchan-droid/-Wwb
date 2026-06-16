@@ -6,11 +6,11 @@ interface HeroProps {
 }
 
 export default function Hero({ onScrollTo }: HeroProps) {
-  // Check if open now (12:00 - 20:00)
+  // Check if open now (11:00 - 19:00)
   const isCurrentlyOpen = () => {
     const now = new Date();
     const hours = now.getHours();
-    return hours >= 12 && hours < 20;
+    return hours >= 11 && hours < 19;
   };
 
   return (
@@ -48,7 +48,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
                 <span className={`relative inline-flex rounded-full h-2 w-2 ${isCurrentlyOpen() ? 'bg-emerald-500' : 'bg-artistic-accent'}`}></span>
               </span>
               <span className="text-[10px] font-sans font-bold text-artistic-dark/75 tracking-[0.15em] uppercase">
-                {isCurrentlyOpen() ? '現正營業 / Open Now (12:00 - 20:00)' : '公休或非營業 / Off-hours'}
+                {isCurrentlyOpen() ? '現正營業 / Open Now (11:00 - 19:00)' : '公休或非營業 / Off-hours'}
               </span>
             </motion.div>
 
@@ -81,7 +81,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className="text-artistic-dark/80 text-sm sm:text-base max-w-2xl font-light leading-relaxed font-sans"
               >
-                由頂尖明星設計師 <span className="text-artistic-dark font-semibold border-b border-artistic-accent/30 hover:border-artistic-accent transition-colors">Endy</span> 與 <span className="text-artistic-dark font-semibold border-b border-artistic-accent/30 hover:border-artistic-accent transition-colors">Migo</span> 坐鎮，主打精準骨骼修飾的高質感<strong>韓式潮剪</strong>、無痕鎖水<strong>燙髮</strong>、以及命定白皙配色的<strong>藝境染髮</strong>。我們將每一次的修剪與造型，都視為一件高奢藝術品的雕琢，喚醒您秀髮深處的極致魅力。
+                由斯古林 1 號主辦設計師 <span className="text-artistic-dark font-semibold border-b border-artistic-accent/30 hover:border-artistic-accent transition-colors">Endy</span> 執掌，主打客製化男士燙髮（羊毛捲、小紅書爆款、日韓系列、前刺、火焰前刺等）、潮流防禦染髮（設計師挑染、霧感色彩）、男士造型精緻剪洗與舒壓洗護。將每一次修整細細雕琢，喚醒您的魅力。
               </motion.p>
             </div>
 
@@ -153,7 +153,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
                   </div>
                   <div>
                     <h4 className="text-[10px] font-sans font-bold tracking-[0.18em] text-artistic-dark/50 uppercase">Operating Hours</h4>
-                    <p className="text-sm font-semibold text-artistic-dark mt-1">每日 PM 12:00 – PM 20:00</p>
+                    <p className="text-sm font-semibold text-artistic-dark mt-1">每日 AM 11:00 – PM 07:00</p>
                     <p className="text-xs text-artistic-dark/60 mt-0.5">預約保留 15 分鐘，每週一、四設計師固定公休</p>
                   </div>
                 </div>

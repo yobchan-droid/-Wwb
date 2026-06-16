@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 export default function App() {
   // Sync selection states between listing items and booking wizard
   const [selectedDesignerId, setSelectedDesignerId] = useState<string>('endy');
-  const [selectedServiceId, setSelectedServiceId] = useState<string>('korean_cut');
+  const [selectedServiceId, setSelectedServiceId] = useState<string>('mens_cut_wash');
 
   // Smooth scroll handler
   const handleScrollTo = (id: string) => {

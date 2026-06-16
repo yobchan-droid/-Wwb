@@ -151,8 +151,7 @@ export default function Testimonials() {
                       onChange={(e) => setSelectedDesigner(e.target.value)}
                       className="w-full bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none px-3 py-2 text-xs focus:border-artistic-accent focus:outline-none transition"
                     >
-                      <option value="endy">Endy 創意總監 / 韓式潮剪</option>
-                      <option value="migo">Migo 染燙專家 / 藝境染髮</option>
+                      <option value="endy">Endy 創意總監 / 精緻剪燙染</option>
                     </select>
                   </div>
                 </div>
@@ -264,7 +263,7 @@ export default function Testimonials() {
 
                 <div className="text-right">
                   <span className="text-[9px] bg-white text-artistic-dark font-sans font-medium px-2 py-0.5 rounded-none border border-artistic-dark/10">
-                    設計師: {rev.designerId === 'endy' ? 'Endy' : 'Migo'}
+                    設計師: {rev.designerId === 'endy' ? 'Endy' : 'Endy'}
                   </span>
                   <p className="text-[9px] text-artistic-dark/50 mt-1 truncate max-w-[150px] font-sans">
                     {rev.serviceName}

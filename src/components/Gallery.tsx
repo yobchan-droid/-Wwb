@@ -28,7 +28,7 @@ export default function Gallery() {
     {
       id: 'gallery-2',
       title: '柔霧雲朵燙髮',
-      designer: 'Migo',
+      designer: 'Endy',
       serviceType: 'perm',
       image: '/src/assets/images/service_perm_1781318514087.jpg',
       likes: 198
@@ -36,7 +36,7 @@ export default function Gallery() {
     {
       id: 'gallery-3',
       title: '迷霧灰銀手刷漸層染',
-      designer: 'Migo',
+      designer: 'Endy',
       serviceType: 'color',
       image: '/src/assets/images/service_color_1781318529528.jpg',
       likes: 247
@@ -60,7 +60,7 @@ export default function Gallery() {
     {
       id: 'gallery-6',
       title: '典雅茶褐極光單色染',
-      designer: 'Migo',
+      designer: 'Endy',
       serviceType: 'color',
       image: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?auto=format&fit=crop&q=80&w=800&h=1000',
       likes: 142
@@ -94,7 +94,7 @@ export default function Gallery() {
           </h2>
           <div className="h-[1px] w-20 bg-artistic-accent mx-auto" />
           <p className="text-artistic-dark/75 font-sans font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            日常可好整理、持久富含動人層次。以下作品皆為 Endy 與 Migo 操刀之實物剪裁、無痕鎖水熱塑燙、藝境調配染色。點擊圖片可放大欣賞精微髮絲流向，尋找您的完美沙龍提案。
+            日常可好整理、持久富含動人層次。以下作品皆為 1 號 Endy 操刀之實錄男性理髮、男士燙髮、與潮流彩染。點擊圖片可放大欣賞細節，尋找最適合您的完美造型提案。
           </p>
         </div>
 
