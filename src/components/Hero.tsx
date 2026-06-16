@@ -82,7 +82,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className="text-artistic-dark/80 text-sm sm:text-base max-w-2xl font-light leading-relaxed font-sans"
               >
-                由斯古林 1 號主辦設計師 <span className="text-artistic-dark font-semibold border-b border-artistic-accent/30 hover:border-artistic-accent transition-colors">Endy</span> 執掌，主打客製化男士燙髮（羊毛捲、小紅書爆款、日韓系列、前刺、火焰前刺等）、潮流防禦染髮（設計師挑染、霧感色彩）、男士造型精緻剪洗與舒壓洗護。將每一次修整細細雕琢，喚醒您的魅力。
+                由斯古林 1 號主辦設計師 <span className="text-artistic-dark font-semibold border-b border-artistic-accent/30 hover:border-artistic-accent transition-colors">Endy</span> 執掌，主打客製化男士/女士美髮燙髮（羊毛捲、縮毛矯正、小紅書爆款、日韓系列、前刺、火焰前刺等）、潮流防禦染髮（設計師挑染、霧感色彩）、男士/女士造型精緻剪洗與舒壓洗護。將每一次修整細細雕琢，喚醒您的魅力。
               </motion.p>
             </div>
 

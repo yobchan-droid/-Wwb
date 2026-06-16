@@ -4,6 +4,11 @@ import { motion, AnimatePresence } from 'motion/react';
 import cutService from '../assets/images/service_korean_cut_1781318500488.jpg';
 import permService from '../assets/images/service_perm_1781318514087.jpg';
 import colorService from '../assets/images/service_color_1781318529528.jpg';
+import spikyCropAmerican from '../assets/images/spiky_crop_american_1781621009163.jpg';
+import spikyQuiffCrop from '../assets/images/spiky_quiff_crop_1781621033570.jpg';
+import texturedSpikyPerm from '../assets/images/textured_spiky_perm_1781621052863.jpg';
+import texturedSlickFade from '../assets/images/textured_slick_fade_1781621070807.jpg';
+import classicSlickUndercut from '../assets/images/classic_slick_undercut_1781621088880.jpg';
 
 interface GalleryItem {
   id: string;
@@ -67,6 +72,46 @@ export default function Gallery() {
       serviceType: 'color',
       image: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?auto=format&fit=crop&q=80&w=800&h=1000',
       likes: 142
+    },
+    {
+      id: 'gallery-7',
+      title: '潮流美式前刺燙燙髮 (American Spiky Perm)',
+      designer: 'Endy',
+      serviceType: 'perm',
+      image: texturedSpikyPerm,
+      likes: 245
+    },
+    {
+      id: 'gallery-8',
+      title: '隨性俐落美式前刺剪裁 (Spiky Crop)',
+      designer: 'Endy',
+      serviceType: 'cut',
+      image: spikyCropAmerican,
+      likes: 198
+    },
+    {
+      id: 'gallery-9',
+      title: '漸層雕刻極致油頭 (High Skin Fade)',
+      designer: 'Endy',
+      serviceType: 'cut',
+      image: texturedSlickFade,
+      likes: 187
+    },
+    {
+      id: 'gallery-10',
+      title: '日系層次輕盈前刺 (Spiky Quiff)',
+      designer: 'Endy',
+      serviceType: 'cut',
+      image: spikyQuiffCrop,
+      likes: 213
+    },
+    {
+      id: 'gallery-11',
+      title: '英式經典復古油頭 (Classic Pompadour)',
+      designer: 'Endy',
+      serviceType: 'cut',
+      image: classicSlickUndercut,
+      likes: 202
     }
   ];
 
@@ -97,7 +142,7 @@ export default function Gallery() {
           </h2>
           <div className="h-[1px] w-20 bg-artistic-accent mx-auto" />
           <p className="text-artistic-dark/75 font-sans font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            日常可好整理、持久富含動人層次。以下作品皆為 1 號 Endy 操刀之實錄男性理髮、男士燙髮、與潮流彩染。點擊圖片可放大欣賞細節，尋找最適合您的完美造型提案。
+            日常可好整理、持久富含動人層次。以下作品皆為 1 號 Endy 操刀之實錄男性理髮、男士/女士美髮燙髮、與潮流彩染。點擊圖片可放大欣賞細節，尋找最適合您的完美造型提案。
           </p>
         </div>
 

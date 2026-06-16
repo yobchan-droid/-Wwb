@@ -10,8 +10,8 @@ export const DESIGNERS: Designer[] = [
     name: 'Endy',
     title: '1 號 創意視覺總監 / 精緻剪燙染專家 (LINE: end0708)',
     avatar: endyAvatar,
-    bio: '身為斯古林髮型林口旗艦店的 1 號主理設計師，Endy 擁有多年男士與流行沙龍資歷。他熱衷於將最前沿的流行趨勢（如小紅書爆款、日韓前刺、羊毛捲與潮流挑染）融入客人的日常造型中。憑藉細緻的傾聽與高超的水分鎖定燙染技術，為每位顧客打造高質感且極易整理的專屬髮型。',
-    specialties: ['男士燙髮 (羊毛捲/前刺)', '專業染髮 (挑染/霧感系列)', '男士精緻剪髮 + 洗髮', '精緻舒壓洗髮'],
+    bio: '身為斯古林髮型林口旗艦店的 1 號主理設計師，Endy 擁有多年男士/女士美髮與流行沙龍資歷。他熱衷於將最前沿的流行趨勢（如客製燙染、小紅書爆款、日韓前刺、縮毛矯正、羊毛捲與潮流挑染）融入客人的日常造型中。憑藉細緻的傾聽與高超的水分鎖定燙染技術，為每位顧客打造高質感且極易整理的專屬髮型。',
+    specialties: ['男士/女士燙髮 (羊毛捲/縮毛矯正/前刺)', '專業染髮 (挑染/霧感系列)', '男士/女士精緻剪髮 + 洗髮', '精緻舒壓洗髮'],
     experience: '斯古林麗林旗艦店主辦設計師 (LINE: end0708)',
     rating: 4.9,
     reviewCount: 168,
@@ -23,23 +23,23 @@ export const DESIGNERS: Designer[] = [
 export const SERVICES: Service[] = [
   {
     id: 'mens_cut_wash',
-    name: '男士剪髮+洗髮 (各式造型剪髮)',
+    name: '男士/女士剪髮+洗髮 (各式造型剪髮)',
     category: 'cut',
     price: 600,
     duration: 45,
-    description: '包含男士精緻剪髮與各式造型剪髮。結合深層頭皮舒壓洗髮，依據個人頭型骨骼比例，雕琢最乾淨俐落的極致線條感。',
+    description: '包含男士/女士精緻剪髮與各式造型剪髮。結合深層頭皮舒壓洗髮，依據個人頭型骨骼比例，雕琢最細緻俐落的極致線條感。',
     image: cutService,
-    tags: ['精緻剪髮', '造型剪髮', '男士專屬']
+    tags: ['精緻剪髮', '造型剪髮', '男士/女士適用']
   },
   {
     id: 'mens_perm',
-    name: '男士潮流設計燙髮 (羊毛捲/前刺系列)',
+    name: '男士/女士潮流設計燙髮 (羊毛捲/前刺/縮毛矯正系列)',
     category: 'perm',
     price: 1500,
     duration: 120,
-    description: '支援羊毛捲、小紅書熱門、韓日陸系列、前刺、火焰前刺等精緻燙髮項目。量身控制蓬鬆度與支撐力，解決頭髮扁塌、難塑形問題。',
+    description: '支援羊毛捲、縮毛矯正、溫塑捲、小紅書熱門、韓日陸系列、前刺、火焰前刺等精緻燙髮項目。量身控制蓬鬆度與支撐力，解決扁塌、難撫平、難塑形問題。',
     image: permService,
-    tags: ['羊毛捲/前刺', '超好整理', '1500元起']
+    tags: ['設計燙髮', '縮毛矯正', '1500元起']
   },
   {
     id: 'hair_color',
@@ -68,7 +68,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '1',
     clientName: '林*豪',
     designerId: 'endy',
-    serviceName: '男士剪髮+洗髮',
+    serviceName: '男士/女士剪髮+洗髮',
     rating: 5,
     text: '極度推薦 1 號 Endy 設計師！剪髮非常細密，我的兩側容易硬梆梆翹起來，Endy 剪好後超順完全不用特別整理，林口三井附近最厲害的！',
     date: '2026-06-10'
@@ -77,7 +77,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: '2',
     clientName: '徐*凱',
     designerId: 'endy',
-    serviceName: '男士潮流設計燙髮 (前刺捲)',
+    serviceName: '男士/女士潮流設計燙髮 (前刺捲)',
     rating: 5,
     text: '以前去別家燙前刺都垮掉，這次指定 Endy 燙火焰前刺，頭頂蓬鬆度非常有型，出門只需要吹乾抹上一點髮蠟，同事都誇很精神！',
     date: '2026-06-12'

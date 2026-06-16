@@ -46,12 +46,12 @@ export default function Footer({ onScrollTo }: FooterProps) {
             <ul className="space-y-2.5 text-[11px] text-white/60">
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  男士精緻設計剪洗款 ($600)
+                  男士/女士精緻設計剪洗款 ($600)
                 </button>
               </li>
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  男士設計燙髮系列 (羊毛捲/前刺等 $1500up)
+                  男士/女士設計燙髮系列 (羊毛捲/前刺等 $1500up)
                 </button>
               </li>
               <li>

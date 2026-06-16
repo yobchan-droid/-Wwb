@@ -36,7 +36,7 @@ export default function Designers({ onSelectDesigner }: DesignersProps) {
           </h2>
           <div className="h-[1px] w-20 bg-artistic-accent mx-auto" />
           <p className="text-artistic-dark/75 font-sans font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto pb-2">
-            斯古林林口店的頂尖美髮藝術大師。無論是追求兩側貼合、極致蓬鬆且易整理的男士燙髮（羊毛捲/小紅書/前刺系列），或是客製化潮流彩染挑染與男士精緻理髮，Endy 都會以極致美學深切傾聽您的造型渴望。
+            斯古林林口店的頂尖美髮藝術大師。無論是追求兩側貼合、極致蓬鬆且易整理的男士/女士燙髮（羊毛捲/縮毛矯正/小紅書/前刺系列），或是客製化潮流彩染挑染與男士/女士精緻理髮，Endy 都會以極致美學深切傾聽您的造型渴望。
           </p>
         </div>
 
