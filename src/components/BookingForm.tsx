@@ -166,11 +166,14 @@ export default function BookingForm({
 
   // Delete/Cancel reservation
   const handleCancelAppointment = (id: string) => {
-    const password = prompt('請輸入預約取消確認密碼：');
+    const targetAppt = appointments.find((appt) => appt.id === id);
+    if (!targetAppt) return;
+
+    const password = prompt('為了安全性驗證，請輸入預約時登記之「電話號碼」作爲確認密碼：');
     if (password === null) return; // User clicked Cancel in prompt
 
-    if (password !== '0987') {
-      alert('❌ 密碼錯誤，無法取消預約！');
+    if (password.trim() !== targetAppt.clientPhone.trim()) {
+      alert('❌ 密碼與預約電話號碼不符，無法取消預約！');
       return;
     }
 
@@ -733,6 +736,9 @@ export default function BookingForm({
                 </span>
               </h3>
               <p className="text-xs text-artistic-dark/45 mt-1">本地保留紀錄（資料儲存於您目前的瀏覽器中，安全保密）</p>
+              <p className="text-xs text-rose-700/80 mt-1 font-medium select-none">
+                💡 溫馨提示：取消預約時，系統會要求輸入您登記之「電話號碼」作為驗證密碼。
+              </p>
             </div>
 
             {appointments.length > 0 && (
