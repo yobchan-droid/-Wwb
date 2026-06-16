@@ -30,6 +30,32 @@ export default function BookingForm({
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Calendar View Date State
+  const [calendarDate, setCalendarDate] = useState('');
+
+  // Anonymizing Help Functions
+  const anonymizeName = (name: string): string => {
+    if (!name) return '貴賓';
+    const n = name.trim();
+    if (n.length <= 1) return n;
+    if (n.length === 2) return n[0] + '*';
+    return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
+  };
+
+  const anonymizePhone = (phone: string): string => {
+    if (!phone) return '';
+    const p = phone.trim();
+    if (p.length < 7) return p;
+    return p.substring(0, 4) + '***' + p.substring(p.length - 3); // e.g. 0912***678
+  };
+
+  // Sync chosen booking form date into calendar agenda view
+  useEffect(() => {
+    if (selectedDate) {
+      setCalendarDate(selectedDate);
+    }
+  }, [selectedDate]);
+
   // Load existing bookings on Mount
   useEffect(() => {
     const stored = localStorage.getItem('aura_appointments');
@@ -40,6 +66,8 @@ export default function BookingForm({
         console.error('Failed to parse localStorage appointments', e);
       }
     }
+    // Initialize default calendar view date to today
+    setCalendarDate(getMinDateString());
   }, []);
 
   // Save bookings helper
@@ -92,6 +120,20 @@ export default function BookingForm({
     }
 
     setIsSubmitting(true);
+
+    // Double-booking defense validation
+    const isAlreadyBooked = appointments.some(
+      (appt) =>
+        appt.designerId === selectedDesignerId &&
+        appt.date === selectedDate &&
+        appt.timeSlot === selectedTime
+    );
+
+    if (isAlreadyBooked) {
+      alert('⚠️ 很抱歉，此時段已被其他人預約，請重新選取其他空檔時段，謝謝！');
+      setIsSubmitting(false);
+      return;
+    }
 
     const newAppointment: Appointment = {
       id: `APT-${Date.now()}`,
@@ -272,11 +314,19 @@ export default function BookingForm({
                           required
                         >
                           <option value="">-- {selectedDate ? '請選擇時間' : '請先選取日期'} --</option>
-                          {activeDesigner?.availableTimes.map((time) => (
-                            <option key={time} value={time}>
-                              {time}
-                            </option>
-                          ))}
+                          {activeDesigner?.availableTimes.map((time) => {
+                            const isBooked = appointments.some(
+                              (appt) =>
+                                appt.designerId === selectedDesignerId &&
+                                appt.date === selectedDate &&
+                                appt.timeSlot === time
+                            );
+                            return (
+                              <option key={time} value={time} disabled={isBooked}>
+                                {time} {isBooked ? ' (🔒 已被預約 / Booked)' : ''}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                     </div>
@@ -407,11 +457,15 @@ export default function BookingForm({
                     <div className="pt-4 space-y-3.5 text-xs text-artistic-dark/80">
                       <div className="flex justify-between">
                         <span className="text-artistic-dark/60">預約貴賓:</span>
-                        <span className="font-semibold text-artistic-dark">{latestBooking?.clientName}</span>
+                        <span className="font-semibold text-artistic-dark">
+                          {latestBooking ? anonymizeName(latestBooking.clientName) : ''}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-artistic-dark/60">聯絡電話:</span>
-                        <span className="font-semibold text-artistic-dark">{latestBooking?.clientPhone}</span>
+                        <span className="font-semibold text-artistic-dark">
+                          {latestBooking ? anonymizePhone(latestBooking.clientPhone) : ''}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-artistic-dark/60">指定大師:</span>
@@ -519,6 +573,147 @@ export default function BookingForm({
 
         </div>
 
+        {/* DAILY AGENDA CALENDAR BOARD */}
+        <div id="booking-calendar" className="mt-20 max-w-6xl mx-auto pt-10 border-t border-artistic-dark/15 text-left">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div className="space-y-1">
+              <h3 className="text-xl font-serif font-normal text-artistic-dark flex items-center gap-2">
+                <CalendarCheck className="w-5 h-5 text-artistic-accent" />
+                <span>斯古林席位 • 每日預約時段行事曆</span>
+              </h3>
+              <p className="text-xs text-artistic-dark/60 font-sans">
+                即時掌握預約狀況。可自行選取日期，查詢 1 號設計師 Endy 的當日預約行程。
+              </p>
+            </div>
+
+            {/* Date Picker Controls for Calendar Board */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-artistic-dark/75 font-sans whitespace-nowrap">
+                選取查詢日期：
+              </span>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-2.5 text-artistic-accent w-4 h-4 pointer-events-none" />
+                <input
+                  type="date"
+                  min={getMinDateString()}
+                  value={calendarDate}
+                  onChange={(e) => setCalendarDate(e.target.value)}
+                  className="bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none pl-9 pr-4 py-2 text-xs focus:border-artistic-accent focus:outline-none transition font-sans"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Daily Schedule Slots */}
+          {(() => {
+            if (!calendarDate) {
+              return (
+                <div className="text-center p-6 bg-artistic-bg/40 border border-dashed border-artistic-dark/10">
+                  <p className="text-xs text-artistic-dark/50 font-sans">請選取日期以載入每日預約時段</p>
+                </div>
+              );
+            }
+            
+            // Calculate if selected calendar date is working
+            const calendarDateObj = new Date(calendarDate);
+            let calendarDayOfWeek = calendarDateObj.getDay();
+            if (calendarDayOfWeek === 0) calendarDayOfWeek = 7; // Sunday maps to 7
+            
+            const isCalendarWorkDay = activeDesigner?.workDays.includes(calendarDayOfWeek);
+            const daysOffNames = {
+              endy: '星期一、四',
+            };
+            const calendarDayOffName = daysOffNames[selectedDesignerId as 'endy'] || '固定公休日';
+
+            if (!isCalendarWorkDay) {
+              return (
+                <div className="bg-rose-500/5 border border-rose-500/10 p-8 text-center rounded-none font-sans">
+                  <span className="text-artistic-accent text-lg block mb-2 font-serif font-bold">💤 固定公休店休中 / Stylist Off-duty</span>
+                  <p className="text-xs text-artistic-dark/85">
+                    設計師 <strong>{activeDesigner?.name}</strong> 於 {calendarDate} ({calendarDayOffName}) 固定安排放假。
+                  </p>
+                  <p className="text-[11px] text-artistic-dark/50 mt-1.5">
+                    歡迎選用其他正常營業工作日（每週二、三、五、六、日）前來理髮預定！
+                  </p>
+                </div>
+              );
+            }
+
+            // Normal working day list of hours
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-sans">
+                {activeDesigner?.availableTimes.map((time) => {
+                  const bookedAppt = appointments.find(
+                    (appt) =>
+                      appt.designerId === selectedDesignerId &&
+                      appt.date === calendarDate &&
+                      appt.timeSlot === time
+                  );
+
+                  return (
+                    <div
+                      key={time}
+                      className={`border p-4 transition-all duration-300 relative flex flex-col justify-between min-h-[95px] ${
+                        bookedAppt
+                          ? 'bg-neutral-50/70 border-neutral-200/50 opacity-80'
+                          : 'bg-white border-artistic-dark/10 hover:border-artistic-accent shadow-2xs hover:shadow-xs group'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="flex items-center text-xs font-bold text-artistic-dark font-mono">
+                          <Clock className={`w-3.5 h-3.5 mr-1.5 ${bookedAppt ? 'text-artistic-dark/35' : 'text-artistic-accent'}`} />
+                          {time}
+                        </span>
+
+                        {bookedAppt ? (
+                          <span className="text-[9px] bg-neutral-100 text-neutral-600 font-bold px-2 py-0.5 rounded-none border border-neutral-200 uppercase tracking-wider font-sans">
+                            已被佔用 / Booked
+                          </span>
+                        ) : (
+                          <span className="text-[9px] bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded-none border border-emerald-200/60 uppercase tracking-wider font-sans">
+                            開放預定 / Available
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-3.5 text-xs leading-relaxed">
+                        {bookedAppt ? (
+                          <div className="space-y-0.5">
+                            <p className="text-artistic-dark/80 font-semibold text-xs">
+                              預約客：<span className="text-artistic-dark">{anonymizeName(bookedAppt.clientName)}</span>
+                            </p>
+                            <p className="text-[10px] text-artistic-dark/50 font-light truncate">
+                              項目：{getServiceName(bookedAppt.serviceId)}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="flex justify-between items-center w-full">
+                            <span className="text-artistic-dark/45 text-[11px] italic">時段開放預定中</span>
+                            <button
+                              onClick={() => {
+                                setSelectedDate(calendarDate);
+                                setSelectedTime(time);
+                                // Scroll smoothly to the booking form element
+                                const elem = document.getElementById('booking-service-select');
+                                if (elem) {
+                                  elem.scrollIntoView({ behavior: 'smooth' });
+                                }
+                              }}
+                              className="text-[11px] font-bold text-artistic-accent hover:text-artistic-dark border-b border-dashed border-artistic-accent hover:border-artistic-dark transition duration-350 pb-0.5 cursor-pointer"
+                            >
+                              選此時段 ➔
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+
         {/* Dynamic Reservations Console History */}
         <div id="my-appointments" className="mt-16 max-w-6xl mx-auto pt-10 border-t border-artistic-dark/15">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 text-left">
@@ -590,8 +785,8 @@ export default function BookingForm({
 
                       <div className="space-y-1 font-sans">
                         <h4 className="font-bold text-artistic-dark flex items-center">
-                          <span>{appt.clientName}</span>
-                          <span className="text-xs text-artistic-dark/45 font-mono ml-2">({appt.clientPhone})</span>
+                          <span>{anonymizeName(appt.clientName)}</span>
+                          <span className="text-xs text-artistic-dark/45 font-mono ml-2">({anonymizePhone(appt.clientPhone)})</span>
                         </h4>
                         <p className="text-xs text-artistic-dark/80">
                           指定項目：<strong className="text-artistic-dark font-semibold">{getServiceName(appt.serviceId)}</strong>
