@@ -151,7 +151,7 @@ export default function Testimonials() {
                       onChange={(e) => setSelectedDesigner(e.target.value)}
                       className="w-full bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none px-3 py-2 text-xs focus:border-artistic-accent focus:outline-none transition"
                     >
-                      <option value="endy">Endy 創意總監 / 精緻剪燙染</option>
+                      <option value="endy">Endy 設計師 / 精緻剪燙染</option>
                     </select>
                   </div>
                 </div>

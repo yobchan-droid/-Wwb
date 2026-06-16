@@ -37,7 +37,7 @@ export default function Services({ onSelectService }: ServicesProps) {
           </h2>
           <div className="h-[1px] w-20 bg-artistic-accent mx-auto" />
           <p className="text-artistic-dark/75 font-sans font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            我們拒絕千篇一律的工業複製。所有服務均依據您的髮質狀態、頭蓋骨結構與膚色基調一對一客製剪裁，並選用國際高端沙龍指定品牌藥劑，保護髮質韌度活性之時展演高奢藝術魅力。
+            我們拒絕千篇一律的工業複製。所有服務均依據您的髮質狀態、頭蓋骨結構與膚色基調客製剪裁，並選用國際高端沙龍指定品牌藥劑，保護髮質韌度活性之時展演高奢藝術魅力。
           </p>
         </div>
 

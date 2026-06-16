@@ -24,7 +24,7 @@ export default function Footer({ onScrollTo }: FooterProps) {
             </div>
             
             <p className="text-white/60 leading-relaxed font-light font-sans text-[11px]">
-              SCREEN HAIR SALON 斯古林髮型林口店完美融合日韓潮剪與高美學工藝。由 1 號設計師 Endy 一同為您奉上一對一的極致奢雅理髮體驗，為您量身定制前所未見的完美帥氣容貌。
+              SCREEN HAIR SALON 斯古林髮型林口店完美融合日韓潮剪與高美學工藝。由 1 號設計師 Endy 一同為您奉上極致奢雅理髮體驗，為您量身定制前所未見的完美帥氣容貌。
             </p>
 
             <div className="flex space-x-2.5 pt-2">
@@ -51,12 +51,12 @@ export default function Footer({ onScrollTo }: FooterProps) {
               </li>
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  男士/女士設計燙髮系列 (羊毛捲/前刺等 $1500up)
+                  男士/女士設計燙髮系列 (羊毛捲/前刺等 $2000up)
                 </button>
               </li>
               <li>
                 <button onClick={() => onScrollTo('services')} className="hover:text-artistic-accent transition cursor-pointer text-left">
-                  大師級染髮 (設計款挑染/霧感彩染 $1500up)
+                  大師級染髮 (設計款挑染/霧感彩染 $2000up)
                 </button>
               </li>
               <li>
@@ -75,7 +75,7 @@ export default function Footer({ onScrollTo }: FooterProps) {
             
             <div className="space-y-3.5 text-[11px]">
               <div className="text-left">
-                <p className="font-semibold text-white">1 號 Endy 創意視覺總監 / 剪燙染大師</p>
+                <p className="font-semibold text-white">1 號 Endy 專業設計師 / 剪燙染大師</p>
                 <span className="text-[10px] text-artistic-accent tracking-widest font-sans uppercase">逢星期一、四固定公休 (LINE: end0708)</span>
               </div>
             </div>

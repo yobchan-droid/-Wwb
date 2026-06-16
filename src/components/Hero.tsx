@@ -116,17 +116,13 @@ export default function Hero({ onScrollTo }: HeroProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.6 }}
-              className="pt-8 grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-2 border-t border-artistic-dark/10 max-w-lg"
+              className="pt-8 grid grid-cols-2 gap-y-4 gap-x-2 border-t border-artistic-dark/10 max-w-lg"
             >
               <div className="flex items-center space-x-2">
                 <ShieldCheck className="w-4 h-4 text-artistic-accent flex-shrink-0" />
                 <span className="text-xs font-medium text-artistic-dark/70 font-sans">日本/歐美沙龍名品藥劑</span>
               </div>
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-artistic-accent flex-shrink-0" />
-                <span className="text-xs font-medium text-artistic-dark/70 font-sans">全程一對一專責服務</span>
-              </div>
-              <div className="flex items-center space-x-2 col-span-2 sm:col-span-1">
                 <ShieldCheck className="w-4 h-4 text-artistic-accent flex-shrink-0" />
                 <span className="text-xs font-medium text-artistic-dark/70 font-sans">客製化膚色/骨骼剪裁</span>
               </div>

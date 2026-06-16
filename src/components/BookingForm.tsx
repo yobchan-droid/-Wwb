@@ -552,14 +552,10 @@ export default function BookingForm({
               <ul className="space-y-4 text-xs text-artistic-dark/85 leading-relaxed font-sans">
                 <li className="flex items-start">
                   <span className="text-artistic-accent font-serif font-bold mr-2">01.</span>
-                  <span><strong>一對一極致美學：</strong>我們全店採高訂預約制，設計師一對一專人接待，為您帶來極致的施工專注度與專屬私域對話。</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-artistic-accent font-serif font-bold mr-2">02.</span>
                   <span><strong>免費前置頭皮檢測：</strong>凡透過此線上系統預約剪、燙、染之首訪貴賓，到店享有免費「頭皮養護智能檢測」乙次。</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-artistic-accent font-serif font-bold mr-2">03.</span>
+                  <span className="text-artistic-accent font-serif font-bold mr-2">02.</span>
                   <span><strong>預約變動與保留：</strong>一般預約為您於現場保留 15 分鐘。若您行程有延誤，歡迎直接與我們美髮沙龍連繫。</span>
                 </li>
               </ul>
@@ -575,7 +571,7 @@ export default function BookingForm({
               <div className="space-y-3 text-xs">
                 {/* Endy status */}
                 <div className="flex items-center justify-between p-2.5 rounded-none bg-artistic-bg/60 border border-artistic-dark/5">
-                  <span className="font-semibold text-artistic-dark">1 號 Endy 創意總監 / 大師</span>
+                  <span className="font-semibold text-artistic-dark">1 號 Endy 設計師 / 大師</span>
                   <span className="text-emerald-700 font-medium">⚫ 週一、四公休，每日開放 9 時段</span>
                 </div>
               </div>

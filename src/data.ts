@@ -8,7 +8,7 @@ export const DESIGNERS: Designer[] = [
   {
     id: 'endy',
     name: 'Endy',
-    title: '1 號 創意視覺總監 / 精緻剪燙染專家 (LINE: end0708)',
+    title: '1 號 專業設計師 / 精緻剪燙染專家 (LINE: end0708)',
     avatar: endyAvatar,
     bio: '身為斯古林髮型林口旗艦店的 1 號主理設計師，Endy 擁有多年男士/女士美髮與流行沙龍資歷。他熱衷於將最前沿的流行趨勢（如客製燙染、小紅書爆款、日韓前刺、縮毛矯正、羊毛捲與潮流挑染）融入客人的日常造型中。憑藉細緻的傾聽與高超的水分鎖定燙染技術，為每位顧客打造高質感且極易整理的專屬髮型。',
     specialties: ['男士/女士燙髮 (羊毛捲/縮毛矯正/前刺)', '專業染髮 (挑染/霧感系列)', '男士/女士精緻剪髮 + 洗髮', '精緻舒壓洗髮'],
@@ -35,21 +35,21 @@ export const SERVICES: Service[] = [
     id: 'mens_perm',
     name: '男士/女士潮流設計燙髮 (羊毛捲/前刺/縮毛矯正系列)',
     category: 'perm',
-    price: 1500,
+    price: 2000,
     duration: 120,
     description: '支援羊毛捲、縮毛矯正、溫塑捲、小紅書熱門、韓日陸系列、前刺、火焰前刺等精緻燙髮項目。量身控制蓬鬆度與支撐力，解決扁塌、難撫平、難塑形問題。',
     image: permService,
-    tags: ['設計燙髮', '縮毛矯正', '1500元起']
+    tags: ['設計燙髮', '縮毛矯正', '2000元起']
   },
   {
     id: 'hair_color',
     name: '大師級藝境防禦染髮 (挑染/潮流彩染)',
     category: 'color',
-    price: 1500,
+    price: 2000,
     duration: 120,
     description: '提供客製設計級挑染、時尚潮流染髮以及純粹霧感等多元色系。使用低氨高保濕名品溫和染劑，保護髮絲健康。',
     image: colorService,
-    tags: ['霧感色系', '挑染/潮流染', '1500元起']
+    tags: ['霧感色系', '挑染/潮流染', '2000元起']
   },
   {
     id: 'hair_wash',
