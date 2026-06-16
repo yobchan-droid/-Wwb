@@ -166,6 +166,14 @@ export default function BookingForm({
 
   // Delete/Cancel reservation
   const handleCancelAppointment = (id: string) => {
+    const password = prompt('請輸入預約取消確認密碼：');
+    if (password === null) return; // User clicked Cancel in prompt
+
+    if (password !== '0987') {
+      alert('❌ 密碼錯誤，無法取消預約！');
+      return;
+    }
+
     if (confirm('確定要取消此美髮預約登記嗎？取消後無法恢復。')) {
       const filtered = appointments.filter((appt) => appt.id !== id);
       saveAppointments(filtered);
@@ -730,7 +738,15 @@ export default function BookingForm({
             {appointments.length > 0 && (
               <button
                 onClick={() => {
-                  if (confirm('確定要清空所有的歷史預約登記嗎？')) {
+                  const password = prompt('請輸入管理密碼以清空所有預約登記：');
+                  if (password === null) return;
+                  
+                  if (password !== '0987') {
+                    alert('❌ 密碼錯誤，無法清空預約！');
+                    return;
+                  }
+
+                  if (confirm('確定要清空所有的歷史預約登記嗎？此操作無法恢復。')) {
                     saveAppointments([]);
                   }
                 }}
