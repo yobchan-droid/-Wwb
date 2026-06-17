@@ -49,6 +49,10 @@ export default function BookingForm({
     return p.substring(0, 4) + '***' + p.substring(p.length - 3); // e.g. 0912***678
   };
 
+  // Database Connection states
+  const [dbStatus, setDbStatus] = useState<{ configured: boolean; provider: string; sqlSetup?: string; supabaseUrl?: string } | null>(null);
+  const [showSqlGuide, setShowSqlGuide] = useState(false);
+
   // Sync chosen booking form date into calendar agenda view
   useEffect(() => {
     if (selectedDate) {
@@ -58,14 +62,46 @@ export default function BookingForm({
 
   // Load existing bookings on Mount
   useEffect(() => {
-    const stored = localStorage.getItem('aura_appointments');
-    if (stored) {
+    // 1. Fetch DB connection status
+    fetch('/api/db-status')
+      .then(res => res.json())
+      .then(data => setDbStatus(data))
+      .catch(err => console.error("Could not fetch database status:", err));
+
+    const localStoredRaw = localStorage.getItem('aura_appointments');
+    let localAppointments: Appointment[] = [];
+    if (localStoredRaw) {
       try {
-        setAppointments(JSON.parse(stored));
+        localAppointments = JSON.parse(localStoredRaw);
+        setAppointments(localAppointments);
       } catch (e) {
         console.error('Failed to parse localStorage appointments', e);
       }
     }
+
+    // 2. Fetch remote appointments
+    fetch('/api/appointments')
+      .then(res => {
+        if (!res.ok) throw new Error("API response not ok");
+        return res.json();
+      })
+      .then(remoteAppts => {
+        if (remoteAppts && Array.isArray(remoteAppts)) {
+          setAppointments(remoteAppts);
+          localStorage.setItem('aura_appointments', JSON.stringify(remoteAppts));
+        } else if (localAppointments.length > 0) {
+          // Sync client local items to server!
+          fetch('/api/sync-cache', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ appointments: localAppointments })
+          }).catch(e => console.warn("Failed to sync cache to server", e));
+        }
+      })
+      .catch(err => {
+        console.warn("Could not fetch server appointments, using local storage cache fallback:", err);
+      });
+
     // Initialize default calendar view date to today
     setCalendarDate(getMinDateString());
   }, []);
@@ -148,20 +184,44 @@ export default function BookingForm({
       createdAt: new Date().toISOString(),
     };
 
-    setTimeout(() => {
-      const updatedAppts = [newAppointment, ...appointments];
-      saveAppointments(updatedAppts);
-      setLatestBooking(newAppointment);
-      setShowSuccess(true);
-      setIsSubmitting(false);
-      
-      // Reset form variables (except selection)
-      setClientName('');
-      setClientPhone('');
-      setSelectedDate('');
-      setSelectedTime('');
-      setNotes('');
-    }, 1200); // simulated loading animation
+    fetch('/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newAppointment)
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("API storage failed");
+        return res.json();
+      })
+      .then(() => {
+        const updatedAppts = [newAppointment, ...appointments];
+        saveAppointments(updatedAppts);
+        setLatestBooking(newAppointment);
+        setShowSuccess(true);
+        setIsSubmitting(false);
+        
+        // Reset form variables (except selection)
+        setClientName('');
+        setClientPhone('');
+        setSelectedDate('');
+        setSelectedTime('');
+        setNotes('');
+      })
+      .catch(err => {
+        console.warn("Could not write appointment to Supabase - saving locally instead:", err);
+        const updatedAppts = [newAppointment, ...appointments];
+        saveAppointments(updatedAppts);
+        setLatestBooking(newAppointment);
+        setShowSuccess(true);
+        setIsSubmitting(false);
+        
+        // Reset form variables (except selection)
+        setClientName('');
+        setClientPhone('');
+        setSelectedDate('');
+        setSelectedTime('');
+        setNotes('');
+      });
   };
 
   // Delete/Cancel reservation
@@ -178,8 +238,17 @@ export default function BookingForm({
     }
 
     if (confirm('確定要取消此美髮預約登記嗎？取消後無法恢復。')) {
-      const filtered = appointments.filter((appt) => appt.id !== id);
-      saveAppointments(filtered);
+      fetch(`/api/appointments/${id}`, {
+        method: 'DELETE'
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("API delete failed");
+        })
+        .catch(err => console.error("Could not delete from DB, running local deletion fallback:", err))
+        .finally(() => {
+          const filtered = appointments.filter((appt) => appt.id !== id);
+          saveAppointments(filtered);
+        });
     }
   };
 
@@ -224,6 +293,53 @@ export default function BookingForm({
           <p className="text-artistic-dark/75 font-sans font-light text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             只需一分鐘，線上選定您的主辦設計師與期望蛻變項目。我們後台系統會即刻為您排定獨立時段並妥善保留專屬席位，免去來回信件溝通。
           </p>
+        </div>
+
+        {/* Supabase Status / Configuration Info */}
+        <div className="max-w-xl mx-auto mb-12 -mt-8 flex flex-col items-center">
+          {dbStatus && dbStatus.configured ? (
+            <div className="flex items-center space-x-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-none font-sans font-medium text-center shadow-sm">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>☁️ 已安全連線至 Supabase 雲端資料庫 (專案位址: {dbStatus.supabaseUrl || "預案網域"})</span>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center space-y-2 w-full">
+              <div className="flex items-center justify-center space-x-2 text-xs text-amber-700 bg-amber-50/70 border border-amber-100/80 px-4 py-2 rounded-none font-sans font-medium w-full max-w-md shadow-sm">
+                <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span>📦 系統目前運行於本地快取模式。</span>
+                <button 
+                  onClick={() => setShowSqlGuide(!showSqlGuide)}
+                  className="underline font-bold text-amber-800 hover:text-amber-950 transition cursor-pointer ml-1"
+                >
+                  【點選此處啟用 Supabase 雲端儲存】
+                </button>
+              </div>
+
+              {showSqlGuide && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -5 }} 
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-artistic-bg border border-artistic-dark/10 p-5 text-left text-xs font-sans w-full max-w-xl text-artistic-dark space-y-3 shadow-sm"
+                >
+                  <p className="font-semibold text-artistic-dark border-b border-artistic-dark/5 pb-1">🔧 如何啟用您的 Supabase 雲端永久儲存：</p>
+                  <ol className="list-decimal list-inside space-y-1.5 text-artistic-dark/80">
+                    <li>請前往 <a href="https://supabase.com" target="_blank" rel="noreferrer" className="underline font-semibold text-artistic-accent">Supabase.com</a> 註冊並建立一個新的 PostgreSQL 資料庫專案。</li>
+                    <li>前往此平台的 <strong>Settings（設定）中的 Secrets（密鑰環境變數）</strong>，建立兩個對應環境變數：
+                      <ul className="list-disc list-inside pl-4 mt-1 font-mono text-[11px] text-artistic-accent space-y-0.5">
+                        <li><code>SUPABASE_URL</code> : 您的專案 API 網址 (Project URL)</li>
+                        <li><code>SUPABASE_KEY</code> : 您的專案金鑰 (Project API key / anon)</li>
+                      </ul>
+                    </li>
+                    <li>在您的 Supabase 控制台的 <strong>SQL Editor</strong> 中點擊「New Query」並執行以下 DDL 結構語法以建立資料庫表結構：</li>
+                  </ol>
+                  <pre className="bg-artistic-dark text-white font-mono p-3 rounded-none overflow-x-auto text-[10px] leading-relaxed max-h-48 select-all">
+                    {dbStatus?.sqlSetup || `-- 建立資料預約與評價表...`}
+                  </pre>
+                  <p className="text-[10px] text-artistic-accent font-medium">✨ 設定完成並重啟或重新載入後，系統將全自動將隨性剪裁、燙染等所有預約記錄永久對接 Supabase 安全永久儲存！</p>
+                </motion.div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start max-w-6xl mx-auto">

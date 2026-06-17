@@ -50,14 +50,6 @@ export default function Gallery() {
       likes: 247
     },
     {
-      id: 'gallery-4',
-      title: '立體羽毛層次剪裁',
-      designer: 'Endy',
-      serviceType: 'cut',
-      image: 'https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?auto=format&fit=crop&q=80&w=800&h=1000',
-      likes: 89
-    },
-    {
       id: 'gallery-5',
       title: '韓式木馬捲氣墊燙',
       designer: 'Endy',

@@ -13,18 +13,44 @@ export default function Testimonials() {
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
 
-  // Load reviews on Mount
+  // Load reviews on Mount (including Supabase Cloud Loader)
   useEffect(() => {
     const stored = localStorage.getItem('aura_testimonials');
+    let localReviews: Testimonial[] = [];
     if (stored) {
       try {
-        setReviews(JSON.parse(stored));
+        localReviews = JSON.parse(stored);
+        setReviews(localReviews);
       } catch (e) {
         console.error('Failed to parse stored testimonials', e);
       }
     } else {
+      localReviews = TESTIMONIALS;
       setReviews(TESTIMONIALS);
     }
+
+    // Load from backend
+    fetch('/api/testimonials')
+      .then(res => {
+        if (!res.ok) throw new Error("API failed");
+        return res.json();
+      })
+      .then(remoteReviews => {
+        if (remoteReviews && remoteReviews.length > 0) {
+          setReviews(remoteReviews);
+          localStorage.setItem('aura_testimonials', JSON.stringify(remoteReviews));
+        } else if (localReviews.length > 0) {
+          // Sync client local cache list to server
+          fetch('/api/sync-cache', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ testimonials: localReviews })
+          }).catch(e => console.warn("Failed to sync testimonials to server", e));
+        }
+      })
+      .catch(err => {
+        console.warn("Could not query server reviews, using local storage cache fallback:", err);
+      });
   }, []);
 
   const saveReviews = (newReviews: Testimonial[]) => {
@@ -49,14 +75,31 @@ export default function Testimonials() {
       date: new Date().toISOString().split('T')[0]
     };
 
-    const updated = [newReview, ...reviews];
-    saveReviews(updated);
-    
-    // Clear and hide Form
-    setClientName('');
-    setReviewText('');
-    setRating(5);
-    setShowAddReview(false);
+    fetch('/api/testimonials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newReview)
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("API save failed");
+        return res.json();
+      })
+      .then(() => {
+        const updated = [newReview, ...reviews];
+        saveReviews(updated);
+      })
+      .catch(err => {
+        console.warn("Could not submit review to database, saving locally fallback:", err);
+        const updated = [newReview, ...reviews];
+        saveReviews(updated);
+      })
+      .finally(() => {
+        // Clear and hide Form
+        setClientName('');
+        setReviewText('');
+        setRating(5);
+        setShowAddReview(false);
+      });
   };
 
   return (
