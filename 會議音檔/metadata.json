@@ -1,6 +1,0 @@
-{
-  "name": "會議聽寫與摘要工具",
-  "description": "提供即時會議語音轉文字、AI會議摘要生成，並支援本機會議記錄儲存與管理。",
-  "requestFramePermissions": ["microphone"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

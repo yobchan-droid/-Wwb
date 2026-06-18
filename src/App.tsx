@@ -42,6 +42,14 @@ export default function App() {
       {/* Main Single Page Sections */}
       <main className="flex-grow">
         
+        {/* Smart Booking Form Section */}
+        <BookingForm
+          selectedDesignerId={selectedDesignerId}
+          selectedServiceId={selectedServiceId}
+          setSelectedDesignerId={setSelectedDesignerId}
+          setSelectedServiceId={setSelectedServiceId}
+        />
+
         {/* Hero Welcome banner */}
         <Hero onScrollTo={handleScrollTo} />
 
@@ -56,14 +64,6 @@ export default function App() {
 
         {/* Customer Feedbacks Testimonials */}
         <Testimonials />
-
-        {/* Smart Booking Form Section */}
-        <BookingForm
-          selectedDesignerId={selectedDesignerId}
-          selectedServiceId={selectedServiceId}
-          setSelectedDesignerId={setSelectedDesignerId}
-          setSelectedServiceId={setSelectedServiceId}
-        />
 
       </main>
 

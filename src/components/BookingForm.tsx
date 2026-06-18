@@ -278,7 +278,7 @@ export default function BookingForm({
   };
 
   return (
-    <section id="booking" className="py-24 bg-white border-t border-b border-artistic-dark/10">
+    <section id="booking" className="pt-32 pb-24 bg-white border-t border-b border-artistic-dark/10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Section Header */}
