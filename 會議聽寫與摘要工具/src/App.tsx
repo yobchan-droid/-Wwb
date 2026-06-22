@@ -34,6 +34,7 @@ export default function App() {
   // Active states for transcription
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [isDragActive, setIsDragActive] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [interim, setInterim] = useState("");
@@ -50,6 +51,12 @@ export default function App() {
   const [isCopiedSummary, setIsCopiedSummary] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  
+  // Audio upload configuration modal states
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importDoTranscribe, setImportDoTranscribe] = useState(true);
+  const [importDoSummary, setImportDoSummary] = useState(true);
   
   // AI Q&A states
   const [activeTab, setActiveTab] = useState<"summary" | "chat">("summary");
@@ -362,8 +369,9 @@ export default function App() {
   };
 
   // Triggers server-side call to Gemini
-  const handleGenerateSummary = async () => {
-    if (!transcript || transcript.trim() === "") {
+  const handleGenerateSummary = async (customTranscript?: string) => {
+    const textToSummarize = customTranscript !== undefined ? customTranscript : transcript;
+    if (!textToSummarize || textToSummarize.trim() === "") {
       setApiError("目前會議錄音轉文字內容為空，無法製作摘要報告。請開始講話或手動編寫會議內容。");
       return;
     }
@@ -387,7 +395,7 @@ export default function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          transcript: transcript,
+          transcript: textToSummarize,
           language: targetLangLabel
         })
       });
@@ -674,8 +682,11 @@ export default function App() {
     });
   };
 
-  const handleAudioImport = async (file: File) => {
+  const handleAudioImport = async (file: File, options?: { doTranscribe: boolean; doSummary: boolean }) => {
     if (!file) return;
+
+    const doTranscribe = options ? options.doTranscribe : true;
+    const doSummary = options ? options.doSummary : true;
 
     if (isRecording) {
       stopRecording();
@@ -687,35 +698,72 @@ export default function App() {
       return;
     }
 
-    // Client space restriction to prevent Cloud Run / Nginx request body size limitations
-    const maxSizeBytes = 15 * 1024 * 1024;
+    // Support up to 200MB of meeting recordings (perfect for 1~3 hours of meeting)
+    const maxSizeBytes = 200 * 1024 * 1024;
     if (file.size > maxSizeBytes) {
-      setApiError(`檔案容量過大 (已有 ${Math.round(file.size / 1024 / 1024)}MB)！由於伺服器網路傳輸與雲端運算限制，請上傳 15MB 以下的音訊。若是 WAV/FLAC 等無損格式，強烈建議您快速將其轉為 MP3/M4A 壓縮格式，即可將容量縮小至數分之一且音質不減，輕鬆完成聽寫！`);
+      setApiError(`檔案容量過大 (已有 ${Math.round(file.size / 1024 / 1024)}MB)！本系統支援最多 200MB 的語音檔案。若大於此限，建議您改用 MP3 格式或分割檔案後重複匯入。`);
       return;
     }
 
     setIsTranscribing(true);
+    setUploadStatus("正在計算音檔長度...");
     setApiError(null);
+    setShowImportModal(false);
 
     try {
       // 1. Fetch file duration
       const audioDuration = await getAudioDuration(file);
 
-      // 2. Base64 encoding
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const resultStr = reader.result as string;
-          const base64Str = resultStr.split(",")[1];
-          resolve(base64Str);
-        };
-        reader.onerror = () => reject(new Error("讀取音訊檔案時發生系統錯誤。"));
-        reader.readAsDataURL(file);
-      });
+      // 2. Prepare chunking
+      const uploadId = `upload_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      const chunkSize = 2 * 1024 * 1024; // 2MB chunk size (highly robust for proxy bypass)
+      const totalChunks = Math.ceil(file.size / chunkSize);
 
-      // 3. Setup meeting details
-      const cleanFileName = file.name.replace(/\.[^/.]+$/, "");
-      const importedTitle = `錄音聽寫：${cleanFileName}`;
+      setUploadStatus(`準備上傳分段共 ${totalChunks} 個...`);
+
+      // 3. Upload chunk by chunk
+      for (let index = 0; index < totalChunks; index++) {
+        const start = index * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const blobSlice = file.slice(start, end);
+
+        // Convert slice to Base64
+        const chunkBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const resultStr = reader.result as string;
+            const base64Str = resultStr.split(",")[1];
+            resolve(base64Str);
+          };
+          reader.onerror = () => reject(new Error(`讀取第 ${index + 1} 個音訊分段失敗。`));
+          reader.readAsDataURL(blobSlice);
+        });
+
+        // Set status
+        const pct = Math.round(((index + 1) / totalChunks) * 100);
+        setUploadStatus(`正在上傳音檔分段: ${index + 1}/${totalChunks} (${pct}%)`);
+
+        // Send chunk to backend
+        const chunkResponse = await fetch("/api/transcribe/chunk", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            uploadId,
+            chunkIndex: index,
+            chunkData: chunkBase64,
+          }),
+        });
+
+        if (!chunkResponse.ok) {
+          const errData = await chunkResponse.json().catch(() => ({}));
+          throw new Error(errData.error || `上傳分段 ${index + 1}/${totalChunks} 失敗。`);
+        }
+      }
+
+      // 4. Trigger merge and transcription
+      setUploadStatus("音檔上傳完成！正在聽寫與識別語音中...");
 
       const langNameMap: { [key: string]: string } = {
         "zh-TW": "繁體中文（台灣）",
@@ -726,51 +774,91 @@ export default function App() {
       
       const targetLangLabel = langNameMap[selectedLanguage] || "繁體中文";
 
-      // 4. Send request to backend
-      const response = await fetch("/api/transcribe", {
+      const completeResponse = await fetch("/api/transcribe/complete", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          audioData: base64Data,
+          uploadId,
+          totalChunks,
           mimeType: file.type || "audio/mp3",
-          language: targetLangLabel
-        })
+          language: targetLangLabel,
+        }),
       });
 
       let data: any;
-      const responseText = await response.text();
+      const responseText = await completeResponse.text();
       try {
         data = JSON.parse(responseText);
       } catch (parseError) {
         console.error("Non-JSON Response body received from backend:", responseText);
-        let errorMsg = `系統偵測到非預期的伺服器網頁回應 (代碼: ${response.status})。`;
-        if (response.status === 413 || responseText.includes("Too Large") || responseText.includes("large")) {
-          errorMsg = "上傳檔案過大，已被伺服器阻擋。請將音檔改存為高度壓縮的 MP3 格式 (例如 128kbps)，並控制在 15MB 以內。";
-        } else if (response.status === 504 || responseText.includes("timeout") || responseText.includes("Gateway Timeout")) {
-          errorMsg = "網路連線逾時。請改用更小的音訊檔案，或檢查您的網路頻寬狀態。";
+        let errorMsg = `系統偵測到非預期的伺服器網頁回應 (代碼: ${completeResponse.status})。`;
+        if (completeResponse.status === 413 || responseText.includes("Too Large") || responseText.includes("large")) {
+          errorMsg = "上傳檔案過大，已被伺服器阻擋。對於特長會議音檔 (1小時以上)，請多給予系統一些時間或將檔案進行壓縮。";
+        } else if (completeResponse.status === 504 || responseText.includes("timeout") || responseText.includes("Gateway Timeout")) {
+          errorMsg = "網路連線逾時。對於特長會議音檔 (1小時以上)，請多給予伺服器一些時間或檢查網路連線。";
         } else {
-          errorMsg = "伺服器配置異常或上傳格式超出系統負荷，請改用一般長度之 MP3/M4A 錄音檔案並重新嘗試。";
+          errorMsg = "伺服器聽寫處理超出系統負荷，請改用一般長度或高度壓縮之 MP3/M4A 錄音檔案並重新嘗試。";
         }
         throw new Error(errorMsg);
       }
 
-      if (!response.ok) {
+      if (!completeResponse.ok) {
         throw new Error(data.error || "音頻伺服器轉錄處理失敗。");
       }
 
       const generatedTranscript = data.transcript || "";
 
       // 5. Create new meeting structure
+      const cleanFileName = file.name.replace(/\.[^/.]+$/, "");
+      
+      let importedTitle = "";
+      if (doTranscribe && doSummary) {
+        importedTitle = `錄音聽寫與摘要：${cleanFileName}`;
+      } else if (doTranscribe) {
+        importedTitle = `錄音聽寫：${cleanFileName}`;
+      } else {
+        importedTitle = `錄音彙整：${cleanFileName}`;
+      }
+
       const newId = `meeting_${Date.now()}`;
+
+      let generatedSummary = "";
+      if (doSummary && generatedTranscript.trim() !== "") {
+        setUploadStatus("語音聽寫識別完成！正在為您自動生成摘要報告與後續行動清單...");
+        try {
+          const response = await fetch("/api/summary", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              transcript: generatedTranscript,
+              language: targetLangLabel
+            })
+          });
+
+          const summaryData = await response.json();
+          if (response.ok) {
+            generatedSummary = summaryData.summary || "";
+          }
+        } catch (sumErr) {
+          console.error("Auto summary generation failed:", sumErr);
+        }
+      }
+
+      const finalTranscript = doTranscribe 
+        ? generatedTranscript 
+        : "（使用者已選擇：本會議僅進行 AI 自動彙整，未產生語音逐字稿）";
+
       const newMeeting: Meeting = {
         id: newId,
         title: importedTitle,
         createdAt: new Date().toISOString(),
         duration: audioDuration,
-        transcript: generatedTranscript,
-        summary: "",
+        transcript: finalTranscript,
+        summary: generatedSummary,
         language: selectedLanguage
       };
 
@@ -778,15 +866,24 @@ export default function App() {
       setActiveMeetingId(newId);
 
       setTitle(importedTitle);
-      setTranscript(generatedTranscript);
+      setTranscript(finalTranscript);
       setDuration(audioDuration);
-      setSummary("");
+      setSummary(generatedSummary);
+      setPendingFile(null);
+
+      // Navigate to correct tab
+      if (doSummary) {
+        setActiveTab("summary");
+      } else {
+        setActiveTab("chat");
+      }
 
     } catch (error: any) {
       console.error("Transcription Failure Details:", error);
       setApiError(error.message || "轉錄服務異常，請重試或前往 Secrets 重新檢查 API 金鑰。");
     } finally {
       setIsTranscribing(false);
+      setUploadStatus("");
     }
   };
 
@@ -799,7 +896,13 @@ export default function App() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleAudioImport(e.target.files[0]);
+      const file = e.target.files[0];
+      if (!file.type.startsWith("audio/") && !/\.(mp3|wav|m4a|aac|ogg|flac|webm)$/i.test(file.name)) {
+        setApiError("不支援的檔案格式。請導入常見的音訊格式檔（如 .mp3, .wav, .m4a, .aac, .ogg 等）。");
+        return;
+      }
+      setPendingFile(file);
+      setShowImportModal(true);
     }
   };
 
@@ -817,7 +920,13 @@ export default function App() {
     e.preventDefault();
     setIsDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleAudioImport(e.dataTransfer.files[0]);
+      const file = e.dataTransfer.files[0];
+      if (!file.type.startsWith("audio/") && !/\.(mp3|wav|m4a|aac|ogg|flac|webm)$/i.test(file.name)) {
+        setApiError("不支援的檔案格式。請導入常見的音訊格式檔（如 .mp3, .wav, .m4a, .aac, .ogg 等）。");
+        return;
+      }
+      setPendingFile(file);
+      setShowImportModal(true);
     }
   };
 
@@ -1090,7 +1199,7 @@ export default function App() {
             {transcript && (
               <button
                 id="btn-generate-ai-summary"
-                onClick={handleGenerateSummary}
+                onClick={() => handleGenerateSummary()}
                 disabled={isGeneratingSummary}
                 className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white rounded-lg font-semibold shadow-md shadow-indigo-100 transition-all cursor-pointer text-xs active:scale-98"
               >
@@ -1163,12 +1272,14 @@ export default function App() {
                     <div className="h-14 w-14 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
                     <FileAudio className="h-6 w-6 text-indigo-500 absolute top-4 left-4 animate-pulse" />
                   </div>
-                  <h3 className="text-slate-800 font-bold mb-2 text-sm">Gemini AI 正在為您逐字聽寫中...</h3>
+                  <h3 className="text-slate-800 font-bold mb-2 text-sm">
+                    {uploadStatus || "Gemini AI 正在為您逐字聽寫中..."}
+                  </h3>
                   <p className="text-xs text-slate-500 max-w-xs leading-relaxed mb-1">
                     分析錄音中的對話細節與人聲特徵，轉換為精準文字。
                   </p>
                   <p className="text-[10px] text-slate-400 font-mono">
-                    (大檔案的音訊通常需要 30 秒至 1 分鐘，請耐心等候)
+                    (大型音檔通常需要 30 秒至 2 分鐘，請耐心等候)
                   </p>
                 </div>
               ) : !transcript && !interim ? (
@@ -1189,7 +1300,7 @@ export default function App() {
                   >
                     <Upload className="w-5 h-5 text-slate-400 group-hover:text-indigo-500 mb-1.5 transition-colors" />
                     <span className="text-xs font-semibold text-slate-600 group-hover:text-indigo-600 mb-0.5 animate-pulse group-hover:animate-none">匯入 & 拖移錄音音檔</span>
-                    <span className="text-[10px] text-slate-400">支援 15MB 內 MP3, M4A, WAV 等 (建議壓縮檔)</span>
+                    <span className="text-[10px] text-slate-400">支援 200MB 內 MP3, M4A, WAV 等 (支援1小時以上會議)</span>
                   </div>
 
                   <div className="bg-slate-50 border border-slate-200/50 rounded-xl p-3 text-left text-[11px] text-slate-500 space-y-1 max-w-xs">
@@ -1482,6 +1593,145 @@ export default function App() {
         </div>
 
       </main>
+
+      {/* Audio Import Settings Dialog Modal Overlay */}
+      {showImportModal && pendingFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md border border-slate-150 overflow-hidden transform scale-100 transition-all p-6">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <Upload className="w-4 h-4 text-indigo-600 animate-pulse" />
+                匯入錄音檔案設定
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowImportModal(false);
+                  setPendingFile(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 text-xs font-bold p-1 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* File Info Header Card */}
+            <div className="bg-slate-50/80 rounded-xl p-3.5 mb-4 border border-slate-150 flex items-start gap-3">
+              <div className="p-2 bg-white border border-slate-100 rounded-lg text-indigo-500 shrink-0">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-extrabold text-slate-700 truncate leading-normal" title={pendingFile.name}>
+                  {pendingFile.name}
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-2">
+                  <span>檔案大小：{(pendingFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+                  <span>•</span>
+                  <span>格式：{pendingFile.type || "Audio"}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Language dropdown configuration */}
+            <div className="mb-4">
+              <label className="block text-xs font-bold text-slate-600 mb-1.5 flex items-center gap-1">
+                <Languages className="w-3.5 h-3.5 text-slate-400" />
+                語音辨識與摘要語言
+              </label>
+              <select
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 cursor-pointer"
+              >
+                <option value="zh-TW">繁體中文（台灣）</option>
+                <option value="zh-CN">简体中文</option>
+                <option value="en-US">English</option>
+                <option value="ja-JP">日本語</option>
+              </select>
+            </div>
+
+            {/* Target processing checkboxes */}
+            <div className="space-y-2.5 mb-5">
+              <label className="block text-xs font-bold text-slate-600 mb-1">請勾選欲處理的智慧項目</label>
+              
+              {/* Option 1: Speech-to-Text (Transcribe) */}
+              <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                importDoTranscribe 
+                  ? "bg-indigo-50/20 border-indigo-200/80 shadow-sm" 
+                  : "bg-white border-slate-200 hover:bg-slate-50/50"
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={importDoTranscribe}
+                  onChange={(e) => {
+                    // Prevent unchecking both
+                    if (!e.target.checked && !importDoSummary) return;
+                    setImportDoTranscribe(e.target.checked);
+                  }}
+                  className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className={`text-xs font-extrabold ${importDoTranscribe ? "text-indigo-950" : "text-slate-700"}`}>
+                    語音轉文字（語音聽寫）
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                    精準、原汁原味地將錄音檔的發音識別並轉化為完整的研討逐字稿。
+                  </p>
+                </div>
+              </label>
+
+              {/* Option 2: AI Summary Generation */}
+              <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                importDoSummary 
+                  ? "bg-indigo-50/20 border-indigo-200/80 shadow-sm" 
+                  : "bg-white border-slate-200 hover:bg-slate-50/50"
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={importDoSummary}
+                  onChange={(e) => {
+                    // Prevent unchecking both
+                    if (!e.target.checked && !importDoTranscribe) return;
+                    setImportDoSummary(e.target.checked);
+                  }}
+                  className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className={`text-xs font-extrabold ${importDoSummary ? "text-indigo-950" : "text-slate-700"}`}>
+                    AI 會議彙整（重點、行動方案）
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+                    由 Google 智慧核心進行篇章解構、摘要重大協議並劃分落實行動清單。
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {/* Cancel & Trigger Action buttons */}
+            <div className="flex gap-2.5 justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowImportModal(false);
+                  setPendingFile(null);
+                }}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAudioImport(pendingFile, { doTranscribe: importDoTranscribe, doSummary: importDoSummary })}
+                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold rounded-lg transition-colors shadow-md shadow-indigo-100 cursor-pointer hover:shadow-indigo-200 active:scale-98"
+              >
+                開始處理
+              </button>
+            </div>
+            
+          </div>
+        </div>
+      )}
 
     </div>
   );

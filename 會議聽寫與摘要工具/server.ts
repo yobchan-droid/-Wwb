@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
@@ -113,6 +114,164 @@ ${transcript}
       res.status(500).json({ 
         error: error.message || "呼叫 AI 進行語音聽寫識別失敗，請確認音訊檔案格式是否正確或稍微縮短檔案長度。" 
       });
+    }
+  });
+
+  // 1. Chunked uploading endpoint
+  app.post("/api/transcribe/chunk", async (req, res) => {
+    try {
+      const { uploadId, chunkIndex, chunkData } = req.body;
+      if (!uploadId || typeof chunkIndex !== "number" || !chunkData) {
+        return res.status(400).json({ error: "參數不正確：缺少 uploadId、chunkIndex 或 chunkData。" });
+      }
+
+      const dir = path.join("/tmp", "meeting_uploads", uploadId);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      const filePath = path.join(dir, `chunk_${chunkIndex}`);
+      const buffer = Buffer.from(chunkData, "base64");
+      fs.writeFileSync(filePath, buffer);
+
+      res.json({ success: true, chunkIndex });
+    } catch (error: any) {
+      console.error("Error receiving chunk in backend:", error);
+      res.status(500).json({ error: error.message || "接收音訊分段時發生伺服器錯誤。" });
+    }
+  });
+
+  // 2. Transcribe merge and execution endpoint
+  app.post("/api/transcribe/complete", async (req, res) => {
+    let dir = "";
+    let fileUploadName = "";
+    try {
+      const { uploadId, totalChunks, mimeType, language = "繁體中文" } = req.body;
+      if (!uploadId || typeof totalChunks !== "number") {
+        return res.status(400).json({ error: "參數不正確：缺少 uploadId 或 totalChunks。" });
+      }
+
+      if (!geminiApiKey) {
+        return res.status(500).json({ 
+          error: "伺服器未設定 GEMINI_API_KEY。請於系統的 Secrets 設定中配置 API 金鑰。" 
+        });
+      }
+
+      dir = path.join("/tmp", "meeting_uploads", uploadId);
+      if (!fs.existsSync(dir)) {
+        return res.status(404).json({ error: "找不到該上傳作業的檔案，可能已被系統清除，請重新上傳。" });
+      }
+
+      // Check and verify all chunks exist
+      const chunkPaths: string[] = [];
+      for (let i = 0; i < totalChunks; i++) {
+        const chunkPath = path.join(dir, `chunk_${i}`);
+        if (!fs.existsSync(chunkPath)) {
+          return res.status(400).json({ error: `缺少第 ${i + 1} 個分段音訊，請重試上傳。` });
+        }
+        chunkPaths.push(chunkPath);
+      }
+
+      // Merge chunks synchronously into a single audio file on disk
+      const mergedFilePath = path.join(dir, "merged_audio");
+      const buffers = chunkPaths.map(chunkPath => fs.readFileSync(chunkPath));
+      const mergedBuffer = Buffer.concat(buffers);
+      fs.writeFileSync(mergedFilePath, mergedBuffer);
+
+      const stats = fs.statSync(mergedFilePath);
+      const fileSizeInMB = stats.size / (1024 * 1024);
+      console.log(`Merged file size: ${fileSizeInMB.toFixed(2)} MB`);
+
+      let transcript = "";
+
+      const prompt = `你是一位專業的速記員與會議秘書。請針對提供的會議錄音檔案，將講者所說的每一句話逐字轉錄（Transcribe）為完美的聽寫文字稿。
+
+轉錄規則：
+1. 精確聽寫：請完整、原汁原味地轉換為文字，不要有任何修飾或省略。
+2. 語句整理：若講者有語病、贅字、語音模糊或雜音，請依照上下文邏輯進行最自然的語意修飾與標點符號分句。
+3. 繁體輸出：請一律以繁體中文（${language}）輸出（如講者說英語則保留英語，口語夾雜時請自然混寫），請保持台灣用語習慣。
+4. 排除雜訊：絕對不要在開頭或結尾加上任何「好的，以下是轉錄...」、「逐字稿如下：」、「希望對你有幫助」等招呼或閒聊話語，直接並僅僅輸出對話逐字稿內容。
+5. 長篇完整：如果内容較長，請輸出完整的長篇逐字稿。
+`;
+
+      // Always leverage the stable cloud Gemini File API (supporting all file sizes)
+      // This completely avoids any base64 payload serialization size limits or 400 Bad Request errors.
+      console.log(`Uploading audio file (${fileSizeInMB.toFixed(2)} MB) to Gemini File API...`);
+      
+      const fileUpload = await ai.files.upload({
+        file: mergedFilePath,
+        config: {
+          mimeType: mimeType || "audio/mp3"
+        }
+      });
+
+      fileUploadName = fileUpload.name;
+      console.log(`File uploaded successfully to Gemini File API. Name: ${fileUploadName}. Polling state...`);
+
+      // Poll till ACTIVE
+      let fileInfo = await ai.files.get({ name: fileUploadName });
+      let attempts = 0;
+      while (fileInfo.state === 'PROCESSING' && attempts < 30) {
+        await new Promise((r) => setTimeout(r, 1000));
+        fileInfo = await ai.files.get({ name: fileUploadName });
+        attempts++;
+        console.log(`Polling file status: ${fileInfo.state} (attempt ${attempts})`);
+      }
+
+      if (fileInfo.state !== 'ACTIVE') {
+        throw new Error(`等候 Google 解析音檔時發生錯誤。目前狀態: ${fileInfo.state}`);
+      }
+
+      console.log("File is now ACTIVE on Gemini storage. Invoking transcription models...");
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                fileData: {
+                  fileUri: fileUpload.uri!,
+                  mimeType: fileUpload.mimeType || "audio/mp3"
+                }
+              },
+              {
+                text: prompt
+              }
+            ]
+          }
+        ]
+      });
+
+      transcript = response.text || "";
+
+      res.json({ transcript });
+    } catch (error: any) {
+      console.error("Gemini Transcription Error in chunked complete:", error);
+      res.status(500).json({ 
+        error: error.message || "呼叫 AI 進行大音檔轉錄失敗，請檢查檔案格式或稍後重試。" 
+      });
+    } finally {
+      // Cleanup local directories safely
+      if (dir && fs.existsSync(dir)) {
+        try {
+          fs.rmSync(dir, { recursive: true, force: true });
+          console.log(`Safely cleaned up local temp directory: ${dir}`);
+        } catch (cleanupErr) {
+          console.error("Failed to clean up local temp files:", cleanupErr);
+        }
+      }
+
+      // Cleanup remote Gemini File safely
+      if (fileUploadName) {
+        try {
+          await ai.files.delete({ name: fileUploadName });
+          console.log(`Safely deleted Gemini File API storage reference: ${fileUploadName}`);
+        } catch (deleteErr) {
+          console.error("Failed to delete Gemini File API storage reference:", deleteErr);
+        }
+      }
     }
   });
 
