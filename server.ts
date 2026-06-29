@@ -160,7 +160,8 @@ app.post("/api/appointments", async (req, res) => {
         .insert([dbRow]);
 
       if (error) {
-        console.warn("Could not insert to Supabase table (perhaps table missing?):", error.message);
+        console.warn("Could not insert to Supabase table:", error.message);
+        return res.status(500).json({ error: error.message });
       } else {
         console.log("Successfully stored appointment in Supabase:", appt.id);
       }
@@ -266,6 +267,7 @@ app.post("/api/testimonials", async (req, res) => {
 
       if (error) {
         console.warn("Could not save testimonial to Supabase:", error.message);
+        return res.status(500).json({ error: error.message });
       } else {
         console.log("Successfully stored testimonial in Supabase:", test.id);
       }
