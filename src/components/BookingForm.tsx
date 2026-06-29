@@ -277,6 +277,29 @@ export default function BookingForm({
     return s ? `NT$${s.price.toLocaleString()}` : '';
   };
 
+  // Filter appointments that are in the future or present (hide past dates and past times of today)
+  const getFilteredAppointments = () => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const currentDate = String(now.getDate()).padStart(2, '0');
+    const currentHour = String(now.getHours()).padStart(2, '0');
+    const currentMinute = String(now.getMinutes()).padStart(2, '0');
+
+    const todayStr = `${currentYear}-${currentMonth}-${currentDate}`;
+    const nowTimeStr = `${currentHour}:${currentMinute}`;
+
+    return appointments.filter((appt) => {
+      if (appt.date < todayStr) return false;
+      if (appt.date > todayStr) return true;
+      
+      // If date is today, check if the slot is in the past
+      // Slots can be "11:00" or range "11:00-12:00". Extract start hour.
+      const slotTime = appt.timeSlot.split('-')[0].trim();
+      return slotTime >= nowTimeStr;
+    });
+  };
+
   return (
     <section id="booking" className="pt-32 pb-24 bg-white border-t border-b border-artistic-dark/10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -829,16 +852,16 @@ export default function BookingForm({
               <h3 className="text-xl font-serif font-normal text-artistic-dark flex items-center space-x-2">
                 <span>我的美髮預約登記紀錄</span>
                 <span className="px-2.5 py-0.5 rounded-none bg-artistic-dark text-[10px] text-white font-sans font-bold">
-                  {appointments.length} 筆
+                  {getFilteredAppointments().length} 筆
                 </span>
               </h3>
-              <p className="text-xs text-artistic-dark/45 mt-1">本地保留紀錄（資料儲存於您目前的瀏覽器中，安全保密）</p>
+              <p className="text-xs text-artistic-dark/45 mt-1">本地保留紀錄（資料儲存於您目前的瀏覽器中，安全保密。系統會自動隱藏當日已過時段及過去的預約項目）</p>
               <p className="text-xs text-rose-700/80 mt-1 font-medium select-none">
                 💡 溫馨提示：取消預約時，系統會要求輸入您登記之「電話號碼」作為驗證密碼。
               </p>
             </div>
 
-            {appointments.length > 0 && (
+            {getFilteredAppointments().length > 0 && (
               <button
                 onClick={() => {
                   const password = prompt('請輸入管理密碼以清空所有預約登記：');
@@ -862,7 +885,7 @@ export default function BookingForm({
           </div>
 
           <AnimatePresence mode="popLayout">
-            {appointments.length === 0 ? (
+            {getFilteredAppointments().length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -871,11 +894,11 @@ export default function BookingForm({
               >
                 <div className="text-artistic-accent text-3xl mb-3">🪮</div>
                 <p className="text-sm text-artistic-dark font-serif font-semibold">目前尚無預約登記紀錄。</p>
-                <p className="text-xs text-artistic-dark/60 mt-1">歡迎填寫上方預約單，指定 1 號設計師 Endy 為您服務！</p>
+                <p className="text-xs text-artistic-dark/60 mt-1">歡迎填寫上方預約單，指定 1 號設計師 Endy 為您服務！（過去已到期的預約或已過時段會自動隱藏）</p>
               </motion.div>
             ) : (
               <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {appointments.map((appt) => (
+                {getFilteredAppointments().map((appt) => (
                   <motion.div
                     key={appt.id}
                     initial={{ opacity: 0, y: 15 }}
