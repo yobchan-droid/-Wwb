@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DESIGNERS, SERVICES } from '../data';
 import { Appointment, Designer, Service } from '../types';
-import { Calendar, Clock, User, Phone, FileText, CheckCircle, Trash2, CalendarCheck, HelpCircle } from 'lucide-react';
+import { Calendar, Clock, User, Phone, FileText, CheckCircle, Trash2, CalendarCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface BookingFormProps {
@@ -659,24 +659,6 @@ export default function BookingForm({
 
           {/* Quick Guide & Side Info panel */}
           <div className="lg:col-span-5 space-y-8">
-            {/* Elegant notice card */}
-            <div className="bg-white border border-artistic-dark/15 p-6 rounded-none space-y-4 shadow-xs">
-              <h4 className="text-base font-serif font-normal text-artistic-dark flex items-center space-x-2 border-b border-artistic-dark/5 pb-2">
-                <HelpCircle className="w-5 h-5 text-artistic-accent" />
-                <span>預約專屬權益指引</span>
-              </h4>
-              <ul className="space-y-4 text-xs text-artistic-dark/85 leading-relaxed font-sans">
-                <li className="flex items-start">
-                  <span className="text-artistic-accent font-serif font-bold mr-2">01.</span>
-                  <span><strong>免費前置頭皮檢測：</strong>凡透過此線上系統預約剪、燙、染之首訪貴賓，到店享有免費「頭皮養護智能檢測」乙次。</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-artistic-accent font-serif font-bold mr-2">02.</span>
-                  <span><strong>預約變動與保留：</strong>一般預約為您於現場保留 15 分鐘。若您行程有延誤，歡迎直接與我們美髮沙龍連繫。</span>
-                </li>
-              </ul>
-            </div>
-
             {/* Simulated Live Active Status panel */}
             <div className="bg-white border border-artistic-dark/15 p-6 rounded-none text-left space-y-4.5 shadow-xs">
               <div className="flex items-center justify-between">
@@ -686,9 +668,12 @@ export default function BookingForm({
 
               <div className="space-y-3 text-xs">
                 {/* Endy status */}
-                <div className="flex items-center justify-between p-2.5 rounded-none bg-artistic-bg/60 border border-artistic-dark/5">
-                  <span className="font-semibold text-artistic-dark">1 號 Endy 設計師 / 大師</span>
-                  <span className="text-emerald-700 font-medium">⚫ 週一、四公休，每日開放 9 時段</span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-none bg-artistic-bg/60 border border-artistic-dark/5 gap-2">
+                  <span className="font-semibold text-artistic-dark text-xs">1 號 Endy 設計師 / 大師</span>
+                  <div className="flex flex-col items-start sm:items-end text-[11px] text-emerald-700 font-medium space-y-0.5">
+                    <span>⚫ 週一、四固定公休</span>
+                    <span>⏰ 工作時間：11:00 - 19:00</span>
+                  </div>
                 </div>
               </div>
             </div>
