@@ -171,8 +171,22 @@ export default function BookingForm({
       return;
     }
 
+    // Generate a valid UUID v4 to be fully compatible with Supabase UUID data type
+    const generateUUID = () => {
+      try {
+        if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+          return window.crypto.randomUUID();
+        }
+      } catch (e) {}
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    };
+
     const newAppointment: Appointment = {
-      id: `APT-${Date.now()}`,
+      id: generateUUID(),
       clientName,
       clientPhone,
       designerId: selectedDesignerId,
@@ -301,7 +315,7 @@ export default function BookingForm({
   };
 
   return (
-    <section id="booking" className="pt-32 pb-24 bg-white border-t border-b border-artistic-dark/10">
+    <section id="booking" className="pt-32 pb-24 bg-white/45 backdrop-blur-md border-t border-b border-artistic-dark/10 relative z-10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Section Header */}

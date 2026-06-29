@@ -103,7 +103,7 @@ export default function Testimonials() {
   };
 
   return (
-    <section id="testimonials" className="py-24 bg-artistic-bg border-t border-b border-artistic-dark/10">
+    <section id="testimonials" className="py-24 bg-artistic-bg/50 backdrop-blur-md border-t border-b border-artistic-dark/10 relative z-10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Section Header */}

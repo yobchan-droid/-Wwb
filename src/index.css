@@ -1,9 +1,38 @@
 @import "tailwindcss";
 
 @theme {
-  --color-artistic-bg: #F9F8F6;
-  --color-artistic-dark: #1A1A1A;
-  --color-artistic-accent: #C5A059;
+  --color-artistic-bg: #FAF5F2;
+  --color-artistic-dark: #1F1412;
+  --color-artistic-accent: #E07E6F;
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Inter", sans-serif;
+  
+  --background-image-cosmetic-cyber: radial-gradient(circle at 20% 30%, rgba(245, 192, 185, 0.35) 0%, rgba(250, 245, 242, 1) 70%), radial-gradient(circle at 80% 80%, rgba(224, 126, 111, 0.18) 0%, rgba(240, 226, 220, 0.5) 50%, rgba(250, 245, 242, 1) 100%);
+  --background-image-cosmetic-glow: linear-gradient(135deg, #FAF5F2 0%, #F4E8E2 50%, #FAF5F2 100%);
+  --background-image-cyber-gold: linear-gradient(135deg, #E07E6F 0%, #F5C5BE 50%, #D38E7E 100%);
+}
+
+@utility bg-cosmetic-cyber {
+  background-image: var(--background-image-cosmetic-cyber);
+}
+
+@utility bg-cosmetic-glow {
+  background-image: var(--background-image-cosmetic-glow);
+}
+
+@utility bg-cyber-gold {
+  background-image: var(--background-image-cyber-gold);
+}
+
+/* Beautiful tech cosmetics ambient light glow rings */
+.cosmetic-aurora-glow {
+  filter: blur(140px);
+  opacity: 0.45;
+  background: radial-gradient(circle, rgba(224, 126, 111, 0.35) 0%, rgba(245, 192, 185, 0.2) 50%, transparent 100%);
+}
+
+.cosmetic-aurora-blue {
+  filter: blur(140px);
+  opacity: 0.3;
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.35) 0%, rgba(196, 181, 253, 0.2) 50%, transparent 100%);
 }

@@ -23,7 +23,7 @@ export default function Designers({ onSelectDesigner }: DesignersProps) {
   };
 
   return (
-    <section id="designers" className="py-24 bg-white">
+    <section id="designers" className="py-24 bg-white/45 backdrop-blur-md relative z-10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Section Header */}

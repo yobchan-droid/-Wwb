@@ -15,7 +15,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-artistic-bg pt-24 pb-16 lg:pb-24 overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-transparent pt-24 pb-16 lg:pb-24 overflow-hidden z-10">
       {/* Background Image with Elegant Artistic Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
@@ -24,8 +24,8 @@ export default function Hero({ onScrollTo }: HeroProps) {
           className="w-full h-full object-cover object-center filter grayscale brightness-110 opacity-15"
           referrerPolicy="no-referrer"
         />
-        {/* Subtle color wash that matches the cream theme */}
-        <div className="absolute inset-0 bg-gradient-to-b from-artistic-bg/50 via-artistic-bg/80 to-artistic-bg" />
+        {/* Subtle color wash that matches the cosmetic theme */}
+        <div className="absolute inset-0 bg-gradient-to-b from-artistic-bg/20 via-artistic-bg/50 to-transparent" />
       </div>
 
       {/* Decorative Line Ornaments reflecting Artistic Flair */}

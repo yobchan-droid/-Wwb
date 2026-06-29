@@ -34,8 +34,13 @@ export default function App() {
   };
 
   return (
-    <div id="salon-app" className="min-h-screen bg-neutral-950 text-stone-100 flex flex-col font-sans selection:bg-amber-400 selection:text-neutral-950">
+    <div id="salon-app" className="min-h-screen bg-cosmetic-cyber text-artistic-dark flex flex-col font-sans selection:bg-artistic-accent selection:text-white relative overflow-hidden">
       
+      {/* High-tech Cosmetic Ambient Glow Backdrops */}
+      <div className="absolute top-[10%] left-[-15%] w-[60vw] h-[60vw] rounded-full cosmetic-aurora-glow pointer-events-none z-0" />
+      <div className="absolute top-[45%] right-[-15%] w-[50vw] h-[50vw] rounded-full cosmetic-aurora-blue pointer-events-none z-0" />
+      <div className="absolute bottom-[15%] left-[5%] w-[45vw] h-[45vw] rounded-full cosmetic-aurora-glow pointer-events-none z-0" />
+
       {/* Header Sticky Navbar */}
       <Header onScrollTo={handleScrollTo} />
 

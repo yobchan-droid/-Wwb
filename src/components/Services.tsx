@@ -24,7 +24,7 @@ export default function Services({ onSelectService }: ServicesProps) {
     : SERVICES.filter(service => service.category === activeCategory);
 
   return (
-    <section id="services" className="py-24 bg-artistic-bg/60 border-t border-b border-artistic-dark/10">
+    <section id="services" className="py-24 bg-artistic-bg/50 backdrop-blur-md border-t border-b border-artistic-dark/10 relative z-10">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         
         {/* Section Header */}
