@@ -456,7 +456,12 @@ export default function BookingForm({
                             setSelectedDate(e.target.value);
                             setSelectedTime(''); // Reset time whenever date changes
                           }}
-                          className="w-full bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none pl-11 pr-4 py-3 text-sm focus:border-artistic-accent focus:outline-none transition"
+                          onClick={(e) => {
+                            try {
+                              e.currentTarget.showPicker();
+                            } catch (err) {}
+                          }}
+                          className="w-full bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none pl-11 pr-4 py-3 text-sm focus:border-artistic-accent focus:outline-none transition cursor-pointer"
                           required
                         />
                       </div>
@@ -743,7 +748,12 @@ export default function BookingForm({
                   min={getMinDateString()}
                   value={calendarDate}
                   onChange={(e) => setCalendarDate(e.target.value)}
-                  className="bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none pl-9 pr-4 py-2 text-xs focus:border-artistic-accent focus:outline-none transition font-sans"
+                  onClick={(e) => {
+                    try {
+                      e.currentTarget.showPicker();
+                    } catch (err) {}
+                  }}
+                  className="bg-artistic-bg border border-artistic-dark/15 text-artistic-dark rounded-none pl-9 pr-4 py-2 text-xs focus:border-artistic-accent focus:outline-none transition font-sans cursor-pointer"
                 />
               </div>
             </div>

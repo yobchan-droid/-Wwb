@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+}
+
 @theme {
   --color-artistic-bg: #0D0908;
   --color-artistic-dark: #F7EFEA;
@@ -41,6 +45,28 @@
 body {
   background-color: #0D0908;
   color: #F7EFEA;
+}
+
+/* Style the native calendar picker indicator icon so it is super clear and matches our theme */
+input[type="date"] {
+  color-scheme: dark;
+  color: #F7EFEA !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(330deg); /* Style it in peach/accent tone */
+  opacity: 0.95;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+input[type="date"]::placeholder {
+  color: rgba(247, 239, 234, 0.45);
 }
 
 /* Transform light panels to beautiful translucent cosmic-glass panels in dark mode */
