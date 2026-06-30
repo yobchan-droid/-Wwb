@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
+let createViteServer: any;
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
@@ -292,9 +292,11 @@ app.post("/api/sync-cache", (req, res) => {
 });
 
 // Integrating Vite or Production serving
-async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
+async function startServer() {  
+if (process.env.NODE_ENV !== "production") {
+  const { createServer } = await import("vite");
+
+    const vite = await createServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
