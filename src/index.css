@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-artistic-bg: #FAF5F2;
-  --color-artistic-dark: #1F1412;
-  --color-artistic-accent: #E07E6F;
+  --color-artistic-bg: #0D0908;
+  --color-artistic-dark: #F7EFEA;
+  --color-artistic-accent: #FFA08F;
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Inter", sans-serif;
   
-  --background-image-cosmetic-cyber: radial-gradient(circle at 20% 30%, rgba(245, 192, 185, 0.35) 0%, rgba(250, 245, 242, 1) 70%), radial-gradient(circle at 80% 80%, rgba(224, 126, 111, 0.18) 0%, rgba(240, 226, 220, 0.5) 50%, rgba(250, 245, 242, 1) 100%);
-  --background-image-cosmetic-glow: linear-gradient(135deg, #FAF5F2 0%, #F4E8E2 50%, #FAF5F2 100%);
-  --background-image-cyber-gold: linear-gradient(135deg, #E07E6F 0%, #F5C5BE 50%, #D38E7E 100%);
+  --background-image-cosmetic-cyber: radial-gradient(circle at 15% 20%, #1E1214 0%, #0F090A 60%, #060404 100%), radial-gradient(circle at 85% 80%, #291518 0%, #0E090A 75%, #050303 100%);
+  --background-image-cosmetic-glow: linear-gradient(135deg, #150E0F 0%, #0B0707 50%, #150E0F 100%);
+  --background-image-cyber-gold: linear-gradient(135deg, #FFA08F 0%, #FFD0C8 50%, #E57D6B 100%);
 }
 
 @utility bg-cosmetic-cyber {
@@ -27,12 +27,49 @@
 /* Beautiful tech cosmetics ambient light glow rings */
 .cosmetic-aurora-glow {
   filter: blur(140px);
-  opacity: 0.45;
-  background: radial-gradient(circle, rgba(224, 126, 111, 0.35) 0%, rgba(245, 192, 185, 0.2) 50%, transparent 100%);
+  opacity: 0.6;
+  background: radial-gradient(circle, rgba(255, 142, 122, 0.45) 0%, rgba(229, 125, 107, 0.15) 55%, transparent 100%);
 }
 
 .cosmetic-aurora-blue {
   filter: blur(140px);
-  opacity: 0.3;
-  background: radial-gradient(circle, rgba(147, 197, 253, 0.35) 0%, rgba(196, 181, 253, 0.2) 50%, transparent 100%);
+  opacity: 0.5;
+  background: radial-gradient(circle, rgba(147, 197, 253, 0.4) 0%, rgba(139, 92, 246, 0.15) 60%, transparent 100%);
+}
+
+/* Global Dark Luxury Override for standard panels and cards */
+body {
+  background-color: #0D0908;
+  color: #F7EFEA;
+}
+
+/* Transform light panels to beautiful translucent cosmic-glass panels in dark mode */
+.bg-white {
+  background-color: rgba(22, 15, 14, 0.75) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(247, 239, 234, 0.12) !important;
+}
+
+.bg-white\/45 {
+  background-color: rgba(22, 15, 14, 0.5) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(247, 239, 234, 0.1) !important;
+}
+
+.bg-white\/95 {
+  background-color: rgba(30, 21, 20, 0.96) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(247, 239, 234, 0.15) !important;
+}
+
+.bg-white\/50 {
+  background-color: rgba(22, 15, 14, 0.55) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(247, 239, 234, 0.1) !important;
+}
+
+.bg-white\/90 {
+  background-color: rgba(30, 21, 20, 0.92) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(247, 239, 234, 0.15) !important;
 }
